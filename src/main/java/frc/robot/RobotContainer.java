@@ -1,14 +1,21 @@
 package frc.robot;
 
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 
 public class RobotContainer {
 
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
+  private final ClimberSubsystem m_climber = new ClimberSubsystem();
+
+  private XboxController driverXbox = new XboxController(0);
+  private XboxController operatorXbox = new XboxController(1);
 
 
   public RobotContainer() {
@@ -16,7 +23,12 @@ public class RobotContainer {
   }
 
   
-  private void configureBindings() {}
+  private void configureBindings() {
+    new JoystickButton(driverXbox, XboxController.Button.kA.value).onTrue(m_climber.climberGoToPosition(Constants.ClimberConstants.climberOut));
+    new JoystickButton(driverXbox, XboxController.Button.kB.value).onTrue(m_climber.climberGoToPosition(Constants.ClimberConstants.climberIn));
+
+
+  }
 
 
   public Command getAutonomousCommand() {
