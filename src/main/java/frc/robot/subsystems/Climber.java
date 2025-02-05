@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
 
@@ -19,6 +20,7 @@ public class Climber extends SubsystemBase {
   public SparkClosedLoopController closedLoopControllerLeft;
   public SparkMaxConfig motorConfig;
   public double targetPos;
+
 
 
   public Climber() {
@@ -71,21 +73,20 @@ public class Climber extends SubsystemBase {
 
   }
 
-  public Command climberDeploy(double targetPos) {
+  public Command climberDown(double targetPos) {
     
     return runOnce(
         () -> {
-          climberMotor.setVoltage(12);
+          climberGoToPosition(Constants.ClimberConstants.climberDown);
 
         });
   }
 
-  public Command climberRetract(double targetPos) {
+  public Command climberUp(double targetPos) {
     
     return runOnce(
         () -> {
-          climberMotor.setVoltage(12);
-
+          climberGoToPosition(Constants.ClimberConstants.climberUp);
         });
   }
 
@@ -93,7 +94,7 @@ public class Climber extends SubsystemBase {
     
     return runOnce(
         () -> {
-          climberMotor.setVoltage(0);
+          climberMotor.set(0);
         });
   }
 

@@ -7,30 +7,33 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
 
-  public SparkFlex elevatorMotorLead;
-  public SparkFlex elevatorMotorFollow;
-  public SparkClosedLoopController closedLoopControllerLeft, closedLoopControllerRight;
+  public SparkMax elevatorMotorLead;
+  public SparkMax elevatorMotorFollow;
+  public SparkClosedLoopController positionController;
   public SparkMaxConfig motorConfig;
+  public SparkMaxConfig followConfig;
   public double targetPos;
 
 
   public Elevator() {
 
-    elevatorMotorLead = new SparkFlex(1, MotorType.kBrushless);
-    elevatorMotorFollow = new SparkFlex(2, MotorType.kBrushless);
+    elevatorMotorLead = new SparkMax(1, MotorType.kBrushless);
+    elevatorMotorFollow = new SparkMax(2, MotorType.kBrushless);
 
-    closedLoopControllerLeft = elevatorMotorLead.getClosedLoopController();
-    closedLoopControllerRight = elevatorMotorFollow.getClosedLoopController();// set follow mode; no need own button
+    positionController = elevatorMotorLead.getClosedLoopController();
 
     motorConfig = new SparkMaxConfig();
+    followConfig = new SparkMaxConfig();
 
     motorConfig.encoder
         .positionConversionFactor(1)
@@ -66,8 +69,10 @@ public class Elevator extends SubsystemBase {
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
 
    
+    followConfig.follow(elevatorMotorLead);
+
     elevatorMotorLead.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    elevatorMotorFollow.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    elevatorMotorFollow.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
 
   }
@@ -76,8 +81,7 @@ public class Elevator extends SubsystemBase {
     
     return runOnce(
         () -> {
-          elevatorMotorLead.setVoltage(12);
-          elevatorMotorFollow.setVoltage(12);
+          elevatorGoToPosition(Constants.ElevatorConstants.elevatorUp);
         });
   }
 
@@ -85,8 +89,8 @@ public class Elevator extends SubsystemBase {
     
     return runOnce(
         () -> {
-          elevatorMotorLead.setVoltage(12);
-          elevatorMotorFollow.setVoltage(12);
+          elevatorGoToPosition(Constants.ElevatorConstants.elevatorDown);
+
         });
   }
 
@@ -94,8 +98,7 @@ public class Elevator extends SubsystemBase {
     
     return runOnce(
         () -> { 
-          elevatorMotorLead.setVoltage(0);
-          elevatorMotorFollow.setVoltage(0);
+          elevatorGoToPosition(Constants.ElevatorConstants.elevatorStop);
         });
   }
 
@@ -104,9 +107,7 @@ public class Elevator extends SubsystemBase {
     return runOnce(
         () -> {
           this.targetPos = targetPos;
-          closedLoopControllerLeft.setReference(targetPos, ControlType.kMAXMotionPositionControl);
-          closedLoopControllerRight.setReference(targetPos, ControlType.kMAXMotionPositionControl);
-
+          positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
         });
   }
 

@@ -13,19 +13,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Hook extends SubsystemBase {
+public class FlapHook extends SubsystemBase {
 
-  public SparkFlex hookMotor;
+  public SparkFlex flapHookMotor;
   public SparkClosedLoopController closedLoopControllerLeft;
   public SparkMaxConfig motorConfig;
   public double targetPos;
 
 
-  public Hook() {
+  public FlapHook() {
 
-    hookMotor = new SparkFlex(6, MotorType.kBrushless);
+    flapHookMotor = new SparkFlex(6, MotorType.kBrushless);
 
-    closedLoopControllerLeft = hookMotor.getClosedLoopController();
+    closedLoopControllerLeft = flapHookMotor.getClosedLoopController();
 
     motorConfig = new SparkMaxConfig();
 
@@ -63,24 +63,8 @@ public class Hook extends SubsystemBase {
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
 
    
-    hookMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    flapHookMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-  }
-
-  public Command hookGo(double targetPos) {
-    
-    return runOnce(
-        () -> {
-
-        });
-  }
-
-  public Command hookStop(double targetPos) {
-    
-    return runOnce(
-        () -> {
-
-        });
   }
 
   public Command hookGoToPosition(double targetPos) {
