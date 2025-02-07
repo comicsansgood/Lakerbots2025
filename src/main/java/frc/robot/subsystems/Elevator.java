@@ -74,18 +74,21 @@ public class Elevator extends SubsystemBase {
 
     motorConfig.idleMode(IdleMode.kBrake);
     followConfig.idleMode(IdleMode.kBrake);
-    
+
     elevatorMotorLead.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     elevatorMotorFollow.configure(followConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
 
   }
 
+
+
+
   public Command elevatorGoUp(double targetPos) {
     
     return runOnce(
         () -> {
-          elevatorGoToPosition(Constants.ElevatorConstants.elevatorUp);
+          elevatorMotorLead.set(0.2);
         });
   }
 
@@ -93,7 +96,7 @@ public class Elevator extends SubsystemBase {
     
     return runOnce(
         () -> {
-          elevatorGoToPosition(Constants.ElevatorConstants.elevatorDown);
+          elevatorMotorLead.set(-0.2);
 
         });
   }
@@ -102,7 +105,7 @@ public class Elevator extends SubsystemBase {
     
     return runOnce(
         () -> { 
-          elevatorGoToPosition(Constants.ElevatorConstants.elevatorStop);
+          elevatorMotorLead.set(0);
         });
   }
 
