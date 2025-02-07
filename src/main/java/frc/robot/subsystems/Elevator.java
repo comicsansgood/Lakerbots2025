@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -71,8 +72,11 @@ public class Elevator extends SubsystemBase {
    
     followConfig.follow(elevatorMotorLead);
 
-    elevatorMotorLead.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    elevatorMotorFollow.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    motorConfig.idleMode(IdleMode.kBrake);
+    followConfig.idleMode(IdleMode.kBrake);
+    
+    elevatorMotorLead.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    elevatorMotorFollow.configure(followConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
 
   }
