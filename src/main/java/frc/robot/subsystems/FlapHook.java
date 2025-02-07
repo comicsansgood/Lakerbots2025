@@ -16,16 +16,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class FlapHook extends SubsystemBase {
 
   public SparkFlex flapHookMotor;
-  public SparkClosedLoopController closedLoopControllerLeft;
+  public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
+
+  public double tolerance = 0.1;//TODO: tune this value
 
 
   public FlapHook() {
 
     flapHookMotor = new SparkFlex(6, MotorType.kBrushless);
 
-    closedLoopControllerLeft = flapHookMotor.getClosedLoopController();
+    closedLoopController = flapHookMotor.getClosedLoopController();
 
     motorConfig = new SparkMaxConfig();
 
@@ -72,14 +74,43 @@ public class FlapHook extends SubsystemBase {
     return runOnce(
         () -> {
           this.targetPos = targetPos;
-          closedLoopControllerLeft.setReference(targetPos, ControlType.kMAXMotionPositionControl);
+          closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
 
         });
   }
 
+  public boolean hookAtPosition(){
+    return getHookPosition() - targetPos < tolerance;
+  }
+
+
+  public double getHookPosition(){
+    return flapHookMotor.getEncoder().getPosition();
+  }
+
+  public Command jiggle(double jiggleLength, double timesJiggled){
+    return 
+    runOnce(()-> {
+      for(var i = 0; i < timesJiggled; i++){
+        runOnce(() -> {
+          targetPos = flapHookMotor.getEncoder().getPosition() + jiggleLength;
+          closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
+        }).until(() -> 
+          hookAtPosition()
+        ).andThen(() -> {
+          targetPos = flapHookMotor.getEncoder().getPosition() - jiggleLength;
+          closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);  
+        });
+      }
+    });
+  }
+  
+
+
 
   @Override
   public void periodic() {
+ 
   }
 
   @Override
