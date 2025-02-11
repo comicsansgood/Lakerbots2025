@@ -25,6 +25,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.FlapHook;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -43,11 +45,14 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController joystick2 = new CommandXboxController(1);
 
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
 
     public static Manipulator manipulator = new Manipulator();
+    public static Climber climber = new Climber();
+    public static FlapHook flapHook = new FlapHook();
     public static LimelightSubsystem limelight = new LimelightSubsystem();
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -91,10 +96,10 @@ public class RobotContainer {
         );
         
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
+        //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+       /*  joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));
+        ));*/
 
         joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0.5).withVelocityY(0))
@@ -115,7 +120,14 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.x().onTrue(manipulator.spinUntilDetected());
+        //joystick.x().onTrue(manipulator.spinUntilDetected());
+        joystick.a().onTrue(climber.climberDown(0.3));    // one speed will be negative, one positive 
+        joystick.y().onTrue(climber.climberUp(-0.3));
+        joystick.x().onTrue(climber.climberStop(0));
+
+        joystick2.a().onTrue(flapHook.hookGoOut(0.3));      // one speed will be negative, one positive
+        joystick2.y().onTrue(flapHook.hookGoIn(0.3));
+        joystick2.x().onTrue(flapHook.hookStop(0));
     }
 
     public Command getAutonomousCommand() {

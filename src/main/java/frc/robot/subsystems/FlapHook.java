@@ -69,6 +69,30 @@ public class FlapHook extends SubsystemBase {
 
   }
 
+  public Command hookGoIn(double targetSpeed){
+    return runOnce(
+      () -> {
+        flapHookMotor.set(targetSpeed);
+      }
+    );
+  }
+
+  public Command hookGoOut(double targetSpeed){
+    return runOnce(
+      () -> {
+        flapHookMotor.set(targetSpeed);
+      }
+    );
+  }
+
+  public Command hookStop(double targetSpeed){
+    return runOnce(
+      () -> {
+        flapHookMotor.set(targetSpeed);
+      }
+    );
+  }
+
   public Command hookGoToPosition(double targetPos) {
     
     return runOnce(
@@ -104,6 +128,8 @@ public class FlapHook extends SubsystemBase {
       }
     });
   }
+
+  
   
 
 

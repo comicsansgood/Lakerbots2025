@@ -25,6 +25,9 @@ public class Manipulator extends SubsystemBase {
 
   public boolean isCoralDetected;
 
+  public double targetPos;
+  public double tolerance = 0.1;
+
   public Manipulator(){
     
     lazer = new LaserCan(7);
@@ -87,8 +90,33 @@ public class Manipulator extends SubsystemBase {
       manipulatorSpin.set(0);
     }).until(() -> isCoralDetected);
 
+  }
+
+  public Command manipulatorSpin(double speed){
+    return Commands.runOnce(() -> {
+      manipulatorSpin.set(speed);
+    });
+  }
+
+  public Command manipulatorGoToPosition(double targetPos) {
+    
+    return runOnce(
+        () -> {
+          this.targetPos = targetPos;
+          positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
+
+        });
+  }
+
+  public boolean manipulatorAtPosition(){
+    return getManipulatorPosition() - targetPos < tolerance;
+  }
 
 
+  public double getManipulatorPosition(){
+    return manipulatorWrist.getEncoder().getPosition();
+  }
+      
   /*@SuppressWarnings("static-access")
   public Command spinUntilDetected() {
 
@@ -103,7 +131,7 @@ public class Manipulator extends SubsystemBase {
           }
 
         }); */
-  }
+  
 
   public boolean exampleCondition() {
     return false;
@@ -111,7 +139,7 @@ public class Manipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    isCoralDetected = lazer.getMeasurement().distance_mm <= 100;
+    //isCoralDetected = lazer.getMeasurement().distance_mm <= 100;
     SmartDashboard.putBoolean("isCoral", isCoralDetected);
   }
 

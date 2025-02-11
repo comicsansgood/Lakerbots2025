@@ -73,28 +73,28 @@ public class Climber extends SubsystemBase {
 
   }
 
-  public Command climberDown(double targetPos) {
+  public Command climberDown(double targetSpeed) {
     
     return runOnce(
         () -> {
-          climberGoToPosition(Constants.ClimberConstants.climberDown);
+          climberMotor.set(targetSpeed);
 
         });
   }
 
-  public Command climberUp(double targetPos) {
+  public Command climberUp(double targetSpeed) {
     
     return runOnce(
         () -> {
-          climberGoToPosition(Constants.ClimberConstants.climberUp);
+          climberMotor.set(targetSpeed);
         });
   }
 
-  public Command climberStop(double targetPos) {
+  public Command climberStop(double targetSpeed) {
     
     return runOnce(
         () -> {
-          climberMotor.set(0);
+          climberMotor.set(targetSpeed);
         });
   }
 
