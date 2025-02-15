@@ -13,24 +13,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
-public class Climber extends SubsystemBase {
+public class Climber2 extends SubsystemBase {
 
-  public SparkMax climberMotor;
+  public SparkMax climber2Motor;
   public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
 
-public double tolerance = 0.1;
+  public double tolerance = 0.1;//TODO: tune this value
 
-  public Climber() {
 
-    climberMotor = new SparkMax(22, MotorType.kBrushless);
-    
+  public Climber2() {
 
-    closedLoopController = climberMotor.getClosedLoopController();
-  
+    climber2Motor = new SparkMax(5, MotorType.kBrushless);
+
+    closedLoopController = climber2Motor.getClosedLoopController();
 
     motorConfig = new SparkMaxConfig();
 
@@ -38,16 +36,16 @@ public double tolerance = 0.1;
         .positionConversionFactor(1)
         .velocityConversionFactor(1);
 
-    
+
 
 
     motorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed
         // loop slot, as it will default to slot 0.
-        .p(0.4)
+        .p(10.0)
         .i(0)
-        .d(0)
+        .d(1)//TODO:these pid values are trash ngl
         .outputRange(-1, 1)
         // Set PID values for velocity control in slot 1
         .p(0.0001, ClosedLoopSlot.kSlot1)
@@ -67,31 +65,13 @@ public double tolerance = 0.1;
         .maxVelocity(6000, ClosedLoopSlot.kSlot1)
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
 
-   
-    climberMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-   
 
+    //motorConfig.inverted(true);
+    climber2Motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
   }
 
   
-/* 
-  public Command climberSpin(double speed) {
-    
-    return Commands.runOnce(() -> { climberMotor.set(speed); });
-  }
-  */
-  public Command climberSpin(double speed){
-    return Commands.runOnce(() -> {climberMotor.set(speed);});
-  }
-
-  public Command climberStop(double speed) {
-    
-    return runOnce(
-        () -> {
-          climberMotor.set(speed);
-        });
-  }
 
   public Command climberGoToPosition(double targetPos) {
     
@@ -103,9 +83,38 @@ public double tolerance = 0.1;
         });
   }
 
+  public boolean climberAtPosition(){
+    return getClimberPosition() - targetPos < tolerance;
+  }
 
+  public Command climber2Spin(double speed){
+    return Commands.runOnce(() -> {climber2Motor.set(speed);});
+  }
+
+
+  public double getClimberPosition(){
+    return climber2Motor.getEncoder().getPosition();
+  }
+
+  public Command jiggle(double jiggleLength, double timesJiggled){
+    return 
+    runOnce(()-> {
+      for(var i = 0; i < timesJiggled; i++){
+        runOnce(() -> {
+          targetPos = climber2Motor.getEncoder().getPosition() + jiggleLength;
+          closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
+        }).until(() -> 
+          climberAtPosition()
+        ).andThen(() -> {
+          targetPos = climber2Motor.getEncoder().getPosition() - jiggleLength;
+          closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);  
+        });
+      }
+    });
+  }
   @Override
   public void periodic() {
+ 
   }
 
   @Override

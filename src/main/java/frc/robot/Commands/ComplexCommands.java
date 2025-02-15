@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
@@ -61,10 +62,21 @@ public class ComplexCommands {
       });
     }
 
+    // https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/hatchbotinlined/commands/Autos.java
+    /*public Command goHomeSequence(){
+      return Commands.sequence(
+        new FunctionalCommand(
+          m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel),
+          m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome),
+          m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome)
+        )
+      );
+    }*/   
+
     public Command collectCoral(){
       return Commands.runOnce(() -> {
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCollect);
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCollect);
         m_manipulator.spinUntilDetected();
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);

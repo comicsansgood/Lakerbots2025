@@ -24,9 +24,11 @@ import frc.robot.Commands.DriveTest;
 import frc.robot.Commands.DriveToTarget;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Climber2;
 import frc.robot.subsystems.FlapHook;
 
 public class RobotContainer {
@@ -52,8 +54,9 @@ public class RobotContainer {
 
 
     public static Manipulator manipulator = new Manipulator();
-    public static Climber climber = new Climber();
+    public static Climber2 climber = new Climber2();
     public static FlapHook flapHook = new FlapHook();
+    public static Elevator elevator = new Elevator();
     public static LimelightSubsystem limelight = new LimelightSubsystem();
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -77,10 +80,10 @@ public class RobotContainer {
 
 
 
-        
-        SmartDashboard.putData("climber down", climber.climberSpin(0.2));
-        SmartDashboard.putData("climber 0", climber.climberSpin(0));
-        SmartDashboard.putData("climber up", climber.climberSpin(-0.2));
+        //so broken lol
+        ///SmartDashboard.putData("climber down", climber.climber2Spin(0.2));
+        ///SmartDashboard.putData("climber 0", climber.climber2Spin(0));
+        //SmartDashboard.putData("climber up", climber.climber2Spin(-0.2));
 
         SmartDashboard.putData("manipulator wrist up", manipulator.manipulatorWristSpin(-0.05));
         SmartDashboard.putData("manipulator wrist 0", manipulator.manipulatorWristSpin(0.0));
@@ -94,14 +97,43 @@ public class RobotContainer {
         SmartDashboard.putData("flaphook 0", flapHook.flapHookSpin(0));
         SmartDashboard.putData("flaphook backwards", flapHook.flapHookSpin(0.05));
 
+        SmartDashboard.putData("climber222 down", climber.climber2Spin(-0.1));
+        SmartDashboard.putData("climber222 0", climber.climber2Spin(0));
+        SmartDashboard.putData("climber222 up", climber.climber2Spin(0.1));
+
         SmartDashboard.putData("flaphook open", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookflapOpen));
         SmartDashboard.putData("flaphook prepare", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         SmartDashboard.putData("flaphook closed", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
+
+        SmartDashboard.putData("climber position up", climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
+        SmartDashboard.putData("climber position down", climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
+
+        SmartDashboard.putData("manipulator algea", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect));
+        SmartDashboard.putData("manipulator home", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome));
+        SmartDashboard.putData("manipulator travel", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel));
+        SmartDashboard.putData("manipulator L1", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCoralL1));
+        SmartDashboard.putData("manipulator L4", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCoralL4));
+
+       
+        SmartDashboard.putData("elevator home", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome));
+        SmartDashboard.putData("elevator process", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorProcess));
+        SmartDashboard.putData("elevator coral 1", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL1));
+        SmartDashboard.putData("elevator coral 2", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL2));
+        SmartDashboard.putData("elevator coral 3", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL3));
+        SmartDashboard.putData("elevator coral 4", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL4));
+        SmartDashboard.putData("elevator alegae2", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL2));
+        SmartDashboard.putData("elevator alegae3", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3));
+
+
+
+
 
 
 
 
         SmartDashboard.putBoolean("isLazerConnected", Constants.isLazerConnected);
+
+        SmartDashboard.putNumber("Elevator Current", elevator.elevatorGetCurrent());
 
         /*SmartDashboard.putData("testingDrivecmd", drivetrain.applyRequest(() ->
         drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
@@ -152,7 +184,7 @@ public class RobotContainer {
         //joystick.x().onTrue(manipulator.spinUntilDetected());
         //joystick.a().onTrue(climber.climberDown(0.3));    // one speed will be negative, one positive 
         //joystick.y().onTrue(climber.climberUp(-0.3));
-        joystick.x().onTrue(climber.climberStop(0));
+       // joystick.x().onTrue(climber.climberStop(0));
 
         joystick2.a().onTrue(flapHook.hookGoOut(0.3));      // one speed will be negative, one positive
         joystick2.y().onTrue(flapHook.hookGoIn(0.3));
