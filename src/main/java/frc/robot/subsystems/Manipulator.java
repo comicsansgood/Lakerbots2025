@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import au.grapplerobotics.LaserCan;
 
 public class Manipulator extends SubsystemBase {
@@ -24,6 +25,7 @@ public class Manipulator extends SubsystemBase {
   public SparkMaxConfig wristConfig;
 
   public boolean isCoralDetected;
+  public boolean isAlgeaNotDetected;
 
   public double targetPos;
   public double tolerance = 0.1;
@@ -31,9 +33,9 @@ public class Manipulator extends SubsystemBase {
   public Manipulator(){
     
     lazer = new LaserCan(7);
-    manipulatorSpin = new SparkMax(8, MotorType.kBrushless);
+    manipulatorSpin = new SparkMax(3, MotorType.kBrushless);
 
-    manipulatorWrist = new SparkMax(99, MotorType.kBrushless);//TODO:can id
+    manipulatorWrist = new SparkMax(4, MotorType.kBrushless);//TODO:can id
     
 
     positionController = manipulatorWrist.getClosedLoopController();
@@ -88,13 +90,31 @@ public class Manipulator extends SubsystemBase {
     },
     () -> {
       manipulatorSpin.set(0);
-    }).until(() -> isCoralDetected);
+    }).until(() -> isCoralDetected = true);
 
   }
+
+  public Command spinUntilNotDetected() {
+
+    return runEnd(
+      () -> {
+        manipulatorSpin.set(0.3);
+      },
+      () -> {
+        manipulatorSpin.set(0);
+      }).until(() -> isCoralDetected = false);
+  
+    }
 
   public Command manipulatorSpin(double speed){
     return Commands.runOnce(() -> {
       manipulatorSpin.set(speed);
+    });
+  }
+
+  public Command manipulatorWristSpin(double speed){
+    return Commands.runOnce(() -> {
+      manipulatorWrist.set(speed);
     });
   }
 
@@ -139,9 +159,14 @@ public class Manipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //isCoralDetected = lazer.getMeasurement().distance_mm <= 100;
+    try{
+    isCoralDetected = lazer.getMeasurement().distance_mm <= 100;
     SmartDashboard.putBoolean("isCoral", isCoralDetected);
+    Constants.isLazerConnected = true;
+  }catch(Exception e){
+    Constants.isLazerConnected = false;
   }
+}
 
   @Override
   public void simulationPeriodic() {

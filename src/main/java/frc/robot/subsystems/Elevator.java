@@ -1,129 +1,94 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Second;
 
-import com.revrobotics.spark.*;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Mechanisms;
 
 public class Elevator extends SubsystemBase {
 
-  public SparkMax elevatorMotorLead;
-  public SparkMax elevatorMotorFollow;
-  public SparkClosedLoopController positionController;
-  public SparkMaxConfig motorConfig;
-  public SparkMaxConfig followConfig;
-  public double targetPos;
+  public TalonFX elevatorLead = new TalonFX(13, "canivore");
+  public TalonFX elevatorFollow = new TalonFX(14, "canivore");
+  private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
+
+  public TalonFXConfiguration cfg = new TalonFXConfiguration();
+
+  private int m_printCount = 0;
+
+  private final Mechanisms m_mechanisms = new Mechanisms();
+
+  public double setpoint;
+  public double tolerance;
 
 
   public Elevator() {
 
-    elevatorMotorLead = new SparkMax(1, MotorType.kBrushless);
-    elevatorMotorFollow = new SparkMax(2, MotorType.kBrushless);
-
-    positionController = elevatorMotorLead.getClosedLoopController();
-
-    motorConfig = new SparkMaxConfig();
-    followConfig = new SparkMaxConfig();
-
-    motorConfig.encoder
-        .positionConversionFactor(1)
-        .velocityConversionFactor(1);
-
-
-
-
-    motorConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        // Set PID values for position control. We don't need to pass a closed
-        // loop slot, as it will default to slot 0.
-        .p(0.4)
-        .i(0)
-        .d(0)
-        .outputRange(-1, 1)
-        // Set PID values for velocity control in slot 1
-        .p(0.0001, ClosedLoopSlot.kSlot1)
-        .i(0, ClosedLoopSlot.kSlot1)
-        .d(0, ClosedLoopSlot.kSlot1)
-        .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
-
-    motorConfig.closedLoop.maxMotion
-        // Set MAXMotion parameters for position control. We don't need to pass
-        // a closed loop slot, as it will default to slot 0.
-        .maxVelocity(1000)
-        .maxAcceleration(1000)
-        .allowedClosedLoopError(1)
-        // Set MAXMotion parameters for velocity control in slot 1
-        .maxAcceleration(500, ClosedLoopSlot.kSlot1)
-        .maxVelocity(6000, ClosedLoopSlot.kSlot1)
-        .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
-
-   
-    followConfig.follow(elevatorMotorLead);
-
-    motorConfig.idleMode(IdleMode.kBrake);
-    followConfig.idleMode(IdleMode.kBrake);
-
-    elevatorMotorLead.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    elevatorMotorFollow.configure(followConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-
-  }
-
-
-
-
-  public Command elevatorGoUp(double targetPos) {
     
-    return runOnce(
-        () -> {
-          elevatorMotorLead.set(0.2);
-        });
+    /* Configure gear ratio */
+    FeedbackConfigs fdb = cfg.Feedback;
+    fdb.SensorToMechanismRatio = 12.8; // 12.8 rotor rotations per mechanism rotation
+
+    /* Configure Motion Magic */
+    MotionMagicConfigs mm = cfg.MotionMagic;
+    mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(5)) // 5 (mechanism) rotations per second cruise
+      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10)) // Take approximately 0.5 seconds to reach max vel
+      // Take approximately 0.1 seconds to reach max accel 
+      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+
+    Slot0Configs slot0 = cfg.Slot0;
+    slot0.kS = 0.25; // Add 0.25 V output to overcome static friction
+    slot0.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+    slot0.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+    slot0.kP = 60; // A position error of 0.2 rotations results in 12 V output
+    slot0.kI = 0; // No output for integrated error
+    slot0.kD = 0.5; // A velocity error of 1 rps results in 0.5 V output
+
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = elevatorLead.getConfigurator().apply(cfg);
+      if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not configure device. Error: " + status.toString());
+    }
+
+   elevatorFollow.setControl(new Follower(elevatorLead.getDeviceID(), false));//change bool for dir inversion
+
+     
   }
 
-  public Command elevatorGoDown(double targetPos) {
-    
-    return runOnce(
-        () -> {
-          elevatorMotorLead.set(-0.2);
-
-        });
+  public void elevatorGoToPosition(double setpoint){
+    this.setpoint = setpoint;
+    elevatorLead.setControl(m_mmReq.withPosition(setpoint));
   }
 
-  public Command elevatorStop(double targetPos) {
-    
-    return runOnce(
-        () -> { 
-          elevatorMotorLead.set(0);
-        });
+  public boolean elevatorAtPosition(){
+    return tolerance < elevatorLead.getPosition().getValueAsDouble() - setpoint;
   }
-
-  public Command elevatorGoToPosition(double targetPos) {
-    
-    return runOnce(
-        () -> {
-          this.targetPos = targetPos;
-          positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
-        });
-  }
-
 
   @Override
   public void periodic() {
+    if (++m_printCount >= 10) {
+      m_printCount = 0;
+      System.out.println("Pos: " + elevatorLead.getPosition());
+      System.out.println("Vel: " + elevatorLead.getVelocity());
+      System.out.println();
+    }
+    m_mechanisms.update(elevatorLead.getPosition(), elevatorLead.getVelocity());
   }
 
-  @Override
-  public void simulationPeriodic() {
+  @Override public void simulationPeriodic() {
   }
 }

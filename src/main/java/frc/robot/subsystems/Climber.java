@@ -16,8 +16,8 @@ import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
 
-  public SparkFlex climberMotor;
-  public SparkClosedLoopController closedLoopControllerLeft;
+  public SparkMax climberMotor;
+  public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
 
@@ -25,10 +25,10 @@ public class Climber extends SubsystemBase {
 
   public Climber() {
 
-    climberMotor = new SparkFlex(5, MotorType.kBrushless);
+    climberMotor = new SparkMax(5, MotorType.kBrushless);
     
 
-    closedLoopControllerLeft = climberMotor.getClosedLoopController();
+    closedLoopController = climberMotor.getClosedLoopController();
   
 
     motorConfig = new SparkMaxConfig();
@@ -73,16 +73,9 @@ public class Climber extends SubsystemBase {
 
   }
 
-  public Command climberDown(double targetSpeed) {
-    
-    return runOnce(
-        () -> {
-          climberMotor.set(targetSpeed);
+  
 
-        });
-  }
-
-  public Command climberUp(double targetSpeed) {
+  public Command climberSpin(double targetSpeed) {
     
     return runOnce(
         () -> {
@@ -103,7 +96,7 @@ public class Climber extends SubsystemBase {
     return runOnce(
         () -> {
           this.targetPos = targetPos;
-          closedLoopControllerLeft.setReference(targetPos, ControlType.kMAXMotionPositionControl);
+          closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
 
         });
   }

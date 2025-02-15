@@ -11,11 +11,12 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FlapHook extends SubsystemBase {
 
-  public SparkFlex flapHookMotor;
+  public SparkMax flapHookMotor;
   public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
@@ -25,7 +26,7 @@ public class FlapHook extends SubsystemBase {
 
   public FlapHook() {
 
-    flapHookMotor = new SparkFlex(6, MotorType.kBrushless);
+    flapHookMotor = new SparkMax(8, MotorType.kBrushless);
 
     closedLoopController = flapHookMotor.getClosedLoopController();
 
@@ -42,9 +43,9 @@ public class FlapHook extends SubsystemBase {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed
         // loop slot, as it will default to slot 0.
-        .p(0.4)
+        .p(0.1)
         .i(0)
-        .d(0)
+        .d(1)//TODO:these pid values are trash ngl
         .outputRange(-1, 1)
         // Set PID values for velocity control in slot 1
         .p(0.0001, ClosedLoopSlot.kSlot1)
@@ -64,7 +65,8 @@ public class FlapHook extends SubsystemBase {
         .maxVelocity(6000, ClosedLoopSlot.kSlot1)
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
 
-   
+
+    //motorConfig.inverted(true);
     flapHookMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
   }
@@ -105,6 +107,10 @@ public class FlapHook extends SubsystemBase {
 
   public boolean hookAtPosition(){
     return getHookPosition() - targetPos < tolerance;
+  }
+
+  public Command flapHookSpin(double speed){
+    return Commands.runOnce(() -> {flapHookMotor.set(speed);});
   }
 
 

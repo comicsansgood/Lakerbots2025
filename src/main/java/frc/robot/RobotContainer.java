@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.DriveTest;
@@ -74,6 +75,34 @@ public class RobotContainer {
 
         SmartDashboard.putData("spin until detect", manipulator.spinUntilDetected());
 
+
+
+        
+        SmartDashboard.putData("climber down", climber.climberSpin(0.2));
+        SmartDashboard.putData("climber 0", climber.climberSpin(0));
+        SmartDashboard.putData("climber up", climber.climberSpin(-0.2));
+
+        SmartDashboard.putData("manipulator wrist up", manipulator.manipulatorWristSpin(-0.05));
+        SmartDashboard.putData("manipulator wrist 0", manipulator.manipulatorWristSpin(0.0));
+        SmartDashboard.putData("manipulator wrist down", manipulator.manipulatorWristSpin(0.05));
+
+        SmartDashboard.putData("manipulator forward", manipulator.manipulatorSpin(0.2));
+        SmartDashboard.putData("manipulator 0", manipulator.manipulatorSpin(0));
+        SmartDashboard.putData("manipulator backwards", manipulator.manipulatorSpin(-0.2));
+      
+        SmartDashboard.putData("flaphook forward", flapHook.flapHookSpin(-0.05));
+        SmartDashboard.putData("flaphook 0", flapHook.flapHookSpin(0));
+        SmartDashboard.putData("flaphook backwards", flapHook.flapHookSpin(0.05));
+
+        SmartDashboard.putData("flaphook open", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookflapOpen));
+        SmartDashboard.putData("flaphook prepare", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+        SmartDashboard.putData("flaphook closed", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
+
+
+
+
+        SmartDashboard.putBoolean("isLazerConnected", Constants.isLazerConnected);
+
         /*SmartDashboard.putData("testingDrivecmd", drivetrain.applyRequest(() ->
         drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
@@ -121,8 +150,8 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         //joystick.x().onTrue(manipulator.spinUntilDetected());
-        joystick.a().onTrue(climber.climberDown(0.3));    // one speed will be negative, one positive 
-        joystick.y().onTrue(climber.climberUp(-0.3));
+        //joystick.a().onTrue(climber.climberDown(0.3));    // one speed will be negative, one positive 
+        //joystick.y().onTrue(climber.climberUp(-0.3));
         joystick.x().onTrue(climber.climberStop(0));
 
         joystick2.a().onTrue(flapHook.hookGoOut(0.3));      // one speed will be negative, one positive

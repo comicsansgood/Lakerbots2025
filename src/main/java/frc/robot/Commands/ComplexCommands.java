@@ -46,6 +46,7 @@ public class ComplexCommands {
 
 
       return Commands.runOnce(() -> {
+        m_manipulator.spinUntilNotDetected();
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
         m_elevator.elevatorGoToPosition(elevatorPosition);
         m_manipulator.manipulatorGoToPosition(manipulatorPosition);
@@ -69,6 +70,34 @@ public class ComplexCommands {
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
         m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
+
+      });
+    }
+
+    public Command collectAlgaeL2(){
+      return Commands.runOnce(() -> {
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL2);
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect);
+        m_manipulator.spinUntilDetected();
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
+      });
+    }
+
+    public Command collectAlgeaL3(){
+      return Commands.runOnce(() -> {
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3);
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect);
+        m_manipulator.spinUntilDetected();
+        //m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);   where does it go with algea in it?
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
+      });
+    }
+
+    public Command algeaProcessor(){
+      return Commands.runOnce(() -> {
 
       });
     }

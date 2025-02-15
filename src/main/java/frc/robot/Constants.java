@@ -3,6 +3,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public class Constants {
+
+    public static boolean isLazerConnected;
+
     public static final double wheelBase = 22.75;
     public static final double trackWidth = 20.75;
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
@@ -13,11 +16,11 @@ public class Constants {
     
     
 
-    public class HookFlapConstants{
-        public static final double flapHookOpen = 0;
-        public static final double hookPrepare = 4;
-        public static final double hookLatch = 10;
-        public static final double flapCollect = 5;
+    public class FlapHookConstants{
+        public static final double hookflapOpen = 0;
+        public static final double hookPrepare = -7;
+        public static final double hookLatch = -16;
+        public static final double flapCollect = -5;
     }
 
     public class ClimberConstants{
