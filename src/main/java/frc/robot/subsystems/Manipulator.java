@@ -1,17 +1,20 @@
 package frc.robot.subsystems;
 
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import au.grapplerobotics.LaserCan;
@@ -30,13 +33,15 @@ public class Manipulator extends SubsystemBase {
   public double targetPos;
   public double tolerance = 0.1;
 
+  private RelativeEncoder encoder;
+
   public Manipulator(){
     
     lazer = new LaserCan(7);
     manipulatorSpin = new SparkMax(3, MotorType.kBrushless);
 
     manipulatorWrist = new SparkMax(4, MotorType.kBrushless);//TODO:can id
-    
+    encoder = manipulatorWrist.getEncoder();
 
     positionController = manipulatorWrist.getClosedLoopController();
   
@@ -48,61 +53,75 @@ public class Manipulator extends SubsystemBase {
         .velocityConversionFactor(1);
 
 
-
+    wristConfig.idleMode(IdleMode.kBrake);
 
     wristConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed
         // loop slot, as it will default to slot 0.
         .p(0.4)
-        .i(0)
+        .i(.001)
         .d(0)
-        .outputRange(-1, 1)
+        .outputRange(-1, 1);
         // Set PID values for velocity control in slot 1
-        .p(0.0001, ClosedLoopSlot.kSlot1)
-        .i(0, ClosedLoopSlot.kSlot1)
-        .d(0, ClosedLoopSlot.kSlot1)
-        .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+        //.p(0.0001, ClosedLoopSlot.kSlot1)
+        //.i(0, ClosedLoopSlot.kSlot1)
+        //.d(0, ClosedLoopSlot.kSlot1)
+        //.velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
+        //.outputRange(-1, 1, ClosedLoopSlot.kSlot1);
 
     wristConfig.closedLoop.maxMotion
         // Set MAXMotion parameters for position control. We don't need to pass
         // a closed loop slot, as it will default to slot 0.
         .maxVelocity(1000)
         .maxAcceleration(1000)
-        .allowedClosedLoopError(1)
+        .allowedClosedLoopError(.1);
         // Set MAXMotion parameters for velocity control in slot 1
-        .maxAcceleration(500, ClosedLoopSlot.kSlot1)
-        .maxVelocity(6000, ClosedLoopSlot.kSlot1)
-        .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
+        //.maxAcceleration(500, ClosedLoopSlot.kSlot1)
+        //.maxVelocity(6000, ClosedLoopSlot.kSlot1)
+        //.allowedClosedLoopError(0.1, ClosedLoopSlot.kSlot1);
 
-   
+        wristConfig.softLimit
+        .reverseSoftLimit(0)
+        .reverseSoftLimitEnabled(true) //have to enable soft limits for them to work ***
+        .forwardSoftLimit(16)
+        .forwardSoftLimitEnabled(true);
+  
+      
     manipulatorWrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-   
+    encoder.setPosition(0);
+
 
     
   }
+
+public Command manipulatorReset(){
+  return runOnce(()->{
+    encoder.setPosition(0);
+  });
+}
+
   public Command spinUntilDetected() {
 
   return runEnd(
     () -> {
-      manipulatorSpin.set(0.3);
+      manipulatorSpin.set(0.2);
     },
     () -> {
       manipulatorSpin.set(0);
-    }).until(() -> isCoralDetected = true);
+    }).until(() -> isCoralDetected == true);
 
   }
 
-  public Command spinUntilNotDetected() {
+  public Command spinUntilNotDetected(double speed) {
 
     return runEnd(
       () -> {
-        manipulatorSpin.set(0.3);
+        manipulatorSpin.set(speed);
       },
       () -> {
         manipulatorSpin.set(0);
-      }).until(() -> isCoralDetected = false);
+      }).until(() -> isCoralDetected == false);
   
     }
 
@@ -128,8 +147,22 @@ public class Manipulator extends SubsystemBase {
         });
   }
 
+  public Command manipulatorGoToPositionUntilThere(double targetPos){
+
+    return runOnce(() ->{
+        this.targetPos = targetPos;
+        positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
+      }
+    ).andThen(Commands.waitUntil(()->manipulatorAtPosition()));
+  }
+
+  
+
+
   public boolean manipulatorAtPosition(){
     return getManipulatorPosition() - targetPos < tolerance;
+
+    // we can rewrite this in if /then form for clarity and understanding
   }
 
 
@@ -159,9 +192,14 @@ public class Manipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    SmartDashboard.putBoolean("isLazerConnected", Constants.isLazerConnected);
+
+
     try{
-    isCoralDetected = lazer.getMeasurement().distance_mm <= 100;
+    isCoralDetected = lazer.getMeasurement().distance_mm <= 30 && lazer.getMeasurement().distance_mm != 0;
     SmartDashboard.putBoolean("isCoral", isCoralDetected);
+    SmartDashboard.putNumber("lazer distance", lazer.getMeasurement().distance_mm);
     Constants.isLazerConnected = true;
   }catch(Exception e){
     Constants.isLazerConnected = false;

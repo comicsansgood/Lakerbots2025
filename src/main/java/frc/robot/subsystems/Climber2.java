@@ -1,12 +1,16 @@
 package frc.robot.subsystems;
 
 
+import javax.net.SocketFactory;
+
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +24,7 @@ public class Climber2 extends SubsystemBase {
   public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
+  private RelativeEncoder encoder; ///CREATE AN ENCODER TODO
 
   public double tolerance = 0.1;//TODO: tune this value
 
@@ -30,48 +35,60 @@ public class Climber2 extends SubsystemBase {
 
     closedLoopController = climber2Motor.getClosedLoopController();
 
+    encoder = climber2Motor.getEncoder();//TODO
+
     motorConfig = new SparkMaxConfig();
 
     motorConfig.encoder
         .positionConversionFactor(1)
         .velocityConversionFactor(1);
 
-
+    motorConfig.idleMode(IdleMode.kBrake);//TODO
 
 
     motorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed
         // loop slot, as it will default to slot 0.
-        .p(10.0)
+        .p(0.08)   // sounded nasty at 10.0  2/15
         .i(0)
-        .d(1)//TODO:these pid values are trash ngl
-        .outputRange(-1, 1)
+        .d(0.1)//TODO:these pid values are trash ngl
+        .outputRange(-1, 1);
         // Set PID values for velocity control in slot 1
-        .p(0.0001, ClosedLoopSlot.kSlot1)
-        .i(0, ClosedLoopSlot.kSlot1)
-        .d(0, ClosedLoopSlot.kSlot1)
-        .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+       // .p(0.0001, ClosedLoopSlot.kSlot1)
+        //.i(0, ClosedLoopSlot.kSlot1)
+        //.d(0, ClosedLoopSlot.kSlot1)
+        //.velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
+        //.outputRange(-1, 1, ClosedLoopSlot.kSlot1);
 
     motorConfig.closedLoop.maxMotion
         // Set MAXMotion parameters for position control. We don't need to pass
         // a closed loop slot, as it will default to slot 0.
-        .maxVelocity(1000)
-        .maxAcceleration(1000)
+        .maxVelocity(2000)
+        .maxAcceleration(2000)
         .allowedClosedLoopError(1)
         // Set MAXMotion parameters for velocity control in slot 1
         .maxAcceleration(500, ClosedLoopSlot.kSlot1)
         .maxVelocity(6000, ClosedLoopSlot.kSlot1)
-        .allowedClosedLoopError(1, ClosedLoopSlot.kSlot1);
+        .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot1);
 
 
     //motorConfig.inverted(true);
-    climber2Motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
+    motorConfig.softLimit
+      .reverseSoftLimit(-167)
+      .reverseSoftLimitEnabled(true) //have to enable soft limits for them to work ***
+      .forwardSoftLimit(0)
+      .forwardSoftLimitEnabled(true);
+
+    
+    climber2Motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    encoder.setPosition(0); //RESETS THE ENCODER ON STARTUP TODO
   }
 
-  
+  public double climberGetCurrent(){
+    return climber2Motor.getOutputCurrent();
+  }
 
   public Command climberGoToPosition(double targetPos) {
     
@@ -81,7 +98,7 @@ public class Climber2 extends SubsystemBase {
           closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
 
         });
-  }
+  } 
 
   public boolean climberAtPosition(){
     return getClimberPosition() - targetPos < tolerance;
@@ -114,6 +131,8 @@ public class Climber2 extends SubsystemBase {
   }
   @Override
   public void periodic() {
+
+    SmartDashboard.putNumber("climber current",climberGetCurrent());
  
   }
 

@@ -47,13 +47,33 @@ public class ComplexCommands {
 
 
       return Commands.runOnce(() -> {
-        m_manipulator.spinUntilNotDetected();
+        m_manipulator.spinUntilNotDetected(0.1);
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
         m_elevator.elevatorGoToPosition(elevatorPosition);
         m_manipulator.manipulatorGoToPosition(manipulatorPosition);
       }); 
     }
+    
 
+    public static Command centerCoral(){
+
+
+      return Commands.sequence(
+      Commands.runOnce(()->{
+        m_manipulator.spinUntilDetected();
+        m_manipulator.spinUntilNotDetected(.05);
+        m_manipulator.manipulatorSpin(-0.1);}), 
+      Commands.waitSeconds(1), 
+      Commands.runOnce(()->{m_manipulator.manipulatorSpin(0);}));
+
+      /*return Commands.runOnce(()->{
+        m_manipulator.spinUntilDetected();
+        m_manipulator.spinUntilNotDetected(.05);
+        m_manipulator.manipulatorSpin(-0.1);
+      }).andThen(Commands.waitSeconds(1)).andThen(m_manipulator.manipulatorSpin(0));*/
+      
+    }
+    
     public Command goHome(){
       return Commands.runOnce(() -> {
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
@@ -71,8 +91,11 @@ public class ComplexCommands {
           m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome)
         )
       );
-    }*/   
-
+    }*/ 
+    // change manipulatorGoToPosition to include an "is finsihed" using the boolean and then use in the format below in the link
+    // https://github.com/comicsansgood/Lakerbots2024/blob/master/src/main/java/frc/robot/commands/FeederCommands/FeederCenter.java
+    
+  
     public Command collectCoral(){
       return Commands.runOnce(() -> {
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
@@ -113,6 +136,18 @@ public class ComplexCommands {
 
       });
     }
+
+    public Command elevatorTravel(double targetPos){
+      return Commands.runOnce(()-> {
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
+        m_elevator.elevatorGoToPosition(targetPos);
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
+      });
+    }
+
+
+
+
 
     /*public Command exampleCommand( type   name){
       return Commands.runOnce(()->{

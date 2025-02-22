@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Commands.ComplexCommands;
 import frc.robot.Commands.DriveTest;
 import frc.robot.Commands.DriveToTarget;
 import frc.robot.generated.TunerConstants;
@@ -89,24 +90,28 @@ public class RobotContainer {
         SmartDashboard.putData("manipulator wrist 0", manipulator.manipulatorWristSpin(0.0));
         SmartDashboard.putData("manipulator wrist down", manipulator.manipulatorWristSpin(0.05));
 
-        SmartDashboard.putData("manipulator forward", manipulator.manipulatorSpin(0.2));
+        SmartDashboard.putData("manipulator forward", manipulator.manipulatorSpin(0.1));
         SmartDashboard.putData("manipulator 0", manipulator.manipulatorSpin(0));
-        SmartDashboard.putData("manipulator backwards", manipulator.manipulatorSpin(-0.2));
+        SmartDashboard.putData("manipulator backwards", manipulator.manipulatorSpin(-0.1));
       
-        SmartDashboard.putData("flaphook forward", flapHook.flapHookSpin(-0.05));
+        SmartDashboard.putData("flaphook Voltage Close", flapHook.flapHookSpin(-0.1));
         SmartDashboard.putData("flaphook 0", flapHook.flapHookSpin(0));
-        SmartDashboard.putData("flaphook backwards", flapHook.flapHookSpin(0.05));
+        SmartDashboard.putData("flaphook Voltage Open", flapHook.flapHookSpin(0.1));
 
-        SmartDashboard.putData("climber222 down", climber.climber2Spin(-0.1));
-        SmartDashboard.putData("climber222 0", climber.climber2Spin(0));
-        SmartDashboard.putData("climber222 up", climber.climber2Spin(0.1));
+        SmartDashboard.putData("Climber open loop go down", climber.climber2Spin(-0.15));
+        SmartDashboard.putData("climbe open loop STOP", climber.climber2Spin(0));
+        SmartDashboard.putData("climber open loop go up", climber.climber2Spin(0.15));
 
         SmartDashboard.putData("flaphook open", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookflapOpen));
         SmartDashboard.putData("flaphook prepare", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         SmartDashboard.putData("flaphook closed", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
+        SmartDashboard.putData("Reset Flap Hook Encoder",flapHook.flapHookEncoderReset());
 
-        SmartDashboard.putData("climber position up", climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
+
+        SmartDashboard.putData("climber position HOME", climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
         SmartDashboard.putData("climber position down", climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
+        SmartDashboard.putData("climber position mid", climber.climberGoToPosition(Constants.ClimberConstants.climberMid));
+
 
         SmartDashboard.putData("manipulator algea", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect));
         SmartDashboard.putData("manipulator home", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome));
@@ -125,15 +130,16 @@ public class RobotContainer {
         SmartDashboard.putData("elevator alegae3", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3));
 
 
+        //SmartDashboard.putData("center coral", ComplexCommands.centerCoral());
+        SmartDashboard.putData("travel sequence test", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel)
+        .andThen(elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL2)));
 
+        SmartDashboard.putData("manipulatorReset", manipulator.manipulatorReset());
 
-
-
-
-
-        SmartDashboard.putBoolean("isLazerConnected", Constants.isLazerConnected);
 
         SmartDashboard.putNumber("Elevator Current", elevator.elevatorGetCurrent());
+
+        //SmartDashboard.putNumber("climber current", climber.climberGetCurrent());
 
         /*SmartDashboard.putData("testingDrivecmd", drivetrain.applyRequest(() ->
         drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)

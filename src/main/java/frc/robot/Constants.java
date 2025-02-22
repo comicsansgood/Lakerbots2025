@@ -17,15 +17,16 @@ public class Constants {
     
 
     public class FlapHookConstants{
-        public static final double hookflapOpen = 0;
-        public static final double hookPrepare = -7;
-        public static final double hookLatch = -17;
-        public static final double flapCollect = -5;
+        public static final double hookflapOpen = 0; // all x 9 for new gear ratio
+        public static final double hookPrepare = -58.5; //-6.5
+        public static final double hookLatch = -156; //-16
+        public static final double flapCollect = -45; //-5
     }
 
     public class ClimberConstants{
         public static final double climberHome = 0;
-        public static final double climberDown = -60;
+        public static final double climberDown = -167;
+        public static final double climberMid = -40;
     }
 
     public class ElevatorConstants{
