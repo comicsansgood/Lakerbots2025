@@ -45,6 +45,8 @@ public class FlapHook extends SubsystemBase {
 
     motorConfig.idleMode(IdleMode.kBrake);
 
+    motorConfig.smartCurrentLimit(40);
+
 
     motorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -126,7 +128,7 @@ public class FlapHook extends SubsystemBase {
   }
 
   public boolean hookAtPosition(){
-    return getHookPosition() - targetPos < tolerance;
+    return Math.abs(getHookPosition() - targetPos) < tolerance;
   }
 
   public Command flapHookSpin(double speed){

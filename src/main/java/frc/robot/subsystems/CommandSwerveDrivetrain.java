@@ -417,12 +417,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         swerveOdometry.update(getState().Pose.getRotation(), modulePositions);
          
         //--------------for limeilght stuff i think, so i commented it out for now---------------
-
-        /*poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+/* 
+        //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
         try{
         poseEstimator.addVisionMeasurement(RobotContainer.limelight.getEstimatedPose(), RobotContainer.limelight.getTimeStamp());
         poseEstimator.resetPosition(rawGyroRotation, modulePositions, RobotContainer.limelight.getEstimatedPose());
-        }catch(Exception e){}*/
+        }catch(Exception e){}
+
+        */
+        ///
+        /// /
+        /// 
+        /// 
+        /// 
+        /// 
+        /// 
+        /// 
 
 
     }

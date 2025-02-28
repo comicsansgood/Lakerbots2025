@@ -45,6 +45,8 @@ public class Climber2 extends SubsystemBase {
 
     motorConfig.idleMode(IdleMode.kBrake);//TODO
 
+    motorConfig.smartCurrentLimit(40);
+
 
     motorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -101,7 +103,7 @@ public class Climber2 extends SubsystemBase {
   } 
 
   public boolean climberAtPosition(){
-    return getClimberPosition() - targetPos < tolerance;
+    return Math.abs(getClimberPosition() - targetPos) < tolerance;
   }
 
   public Command climber2Spin(double speed){

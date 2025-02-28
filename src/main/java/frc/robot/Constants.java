@@ -26,18 +26,18 @@ public class Constants {
     public class ClimberConstants{
         public static final double climberHome = 0;
         public static final double climberDown = -167;
-        public static final double climberMid = -40;
+        public static final double climberMid = -80;
     }
 
     public class ElevatorConstants{
         public static final double elevatorHome = -0.5;
         public static final double elevatorCoralL1 = -3;
         public static final double elevatorCoralL2 = -5.5;
-        public static final double elevatorCoralL3 = -13;
+        public static final double elevatorCoralL3 = -15;
         public static final double elevatorCoralL4 = -25;
-        public static final double elevatorProcess = -1;
-        public static final double elevatorAlgaeL2 = -7;
-        public static final double elevatorAlgaeL3 = -16;
+        public static final double elevatorProcess = -2;
+        public static final double elevatorAlgaeL2 = -8;
+        public static final double elevatorAlgaeL3 = -14.5;
     }
 
     public class ManipulatorConstants{
@@ -48,8 +48,9 @@ public class Constants {
         public static final double manipulatorCoralL2 = 2;
         public static final double manipulatorCoralL3 = 2;
         public static final double manipulatorCoralL4 = 5;
-        public static final double manipulatorAlgeaCollect = 16;
-        public static final double manipulatorAlgaeProcess = 4;
+        public static final double manipulatorAlgeaCollect = 14;
+        
+        public static final double manipulatorAlgaeProcess = 18;
     }
     
 }

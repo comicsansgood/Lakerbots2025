@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.Climber;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.Climber2;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.FlapHook;
 import frc.robot.subsystems.Manipulator;
@@ -14,127 +15,93 @@ import frc.robot.subsystems.Manipulator;
 public class ComplexCommands {
 
 
-    public static FlapHook flapHook = new FlapHook();
-    
-    public static Elevator m_elevator = new Elevator();
-    public static Manipulator m_manipulator = new Manipulator();
+    public static FlapHook m_flapHook = RobotContainer.flapHook;
+    public static Elevator m_elevator = RobotContainer.elevator;
+    public static Manipulator m_manipulator = RobotContainer.manipulator;
 
     public static double manipulatorPosition, elevatorPosition;
+
+    public static FunctionalCommands m_FunctionalCommands;
 
     public ComplexCommands(){}
 
     
-
-    public Command score(int level){
+  //---------this needs to be commented and tested----//
+    public static Command score(int level){
       switch(level){
-        case 1:
-          manipulatorPosition = Constants.ManipulatorConstants.manipulatorCoralL1;
-          elevatorPosition = Constants.ElevatorConstants.elevatorCoralL1;
-          break;
-        case 2: 
-          manipulatorPosition = Constants.ManipulatorConstants.manipulatorCoralL2;
-          elevatorPosition = Constants.ElevatorConstants.elevatorCoralL2;
-          break;
-        case 3:
-          manipulatorPosition = Constants.ManipulatorConstants.manipulatorCoralL3;
-          elevatorPosition = Constants.ElevatorConstants.elevatorCoralL3;
-          break;
-        case 4:
-          manipulatorPosition = Constants.ManipulatorConstants.manipulatorCoralL4;
-          elevatorPosition = Constants.ElevatorConstants.elevatorCoralL4;
-          break;
+        case 1:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL1;break;
+        case 2:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL2;break;
+        case 3:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL3;break;
+        case 4:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL4;break;
       }
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        m_elevator.elevatorGoToPosition(elevatorPosition)
+      ); 
+    }
+    
+//--- INDEX the CORAL---///
+    public static Command indexCoral(){//TODO:test
+      return Commands.sequence(
+        m_manipulator.spinUntilDetected(0.5),
+        m_manipulator.spinUntilNotDetected(0.1),
+        m_manipulator.manipulatorSpinForTime(-0.1, 0.35)
+      );   
+    }
 
+    
 
-      return Commands.runOnce(() -> {
-        m_manipulator.spinUntilNotDetected(0.1);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(elevatorPosition);
-        m_manipulator.manipulatorGoToPosition(manipulatorPosition);
-      }); 
+    //---Return to home with safe manipulator position----//
+
+    public static Command goToHomePose(){
+      return Commands.sequence(
+      m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),// this does not appear to be working correctly
+      m_elevator.elevatorGoToPositionUntilThere(Constants.ElevatorConstants.elevatorHome),
+      m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorHome));
     }
     
 
-    public static Command centerCoral(){
-
-
+    public Command algeaCollect(){
       return Commands.sequence(
-      Commands.runOnce(()->{
-        m_manipulator.spinUntilDetected();
-        m_manipulator.spinUntilNotDetected(.05);
-        m_manipulator.manipulatorSpin(-0.1);}), 
-      Commands.waitSeconds(1), 
-      Commands.runOnce(()->{m_manipulator.manipulatorSpin(0);}));
-
-      /*return Commands.runOnce(()->{
-        m_manipulator.spinUntilDetected();
-        m_manipulator.spinUntilNotDetected(.05);
-        m_manipulator.manipulatorSpin(-0.1);
-      }).andThen(Commands.waitSeconds(1)).andThen(m_manipulator.manipulatorSpin(0));*/
-      
-    }
-    
-    public Command goHome(){
-      return Commands.runOnce(() -> {
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
-      });
-    }
-
-    // https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/hatchbotinlined/commands/Autos.java
-    /*public Command goHomeSequence(){
-      return Commands.sequence(
-        new FunctionalCommand(
-          m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel),
-          m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome),
-          m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome)
-        )
+        m_manipulator.manipulatorSpinForTime(0.2, 0.2),
+        m_manipulator.manipulatorSpinUntilCurrentReached(0.2, 0.1),
+        m_manipulator.manipulatorSpin(0.05)//hold at 5 %
       );
-    }*/ 
-    // change manipulatorGoToPosition to include an "is finsihed" using the boolean and then use in the format below in the link
-    // https://github.com/comicsansgood/Lakerbots2024/blob/master/src/main/java/frc/robot/commands/FeederCommands/FeederCenter.java
-    
-  
-    public Command collectCoral(){
-      return Commands.runOnce(() -> {
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCollect);
-        m_manipulator.spinUntilDetected();
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
 
-      });
+      ///return Commands.sequence(null)
+      /// manipulator spin for time
+      /// manipulator spin until current threashold reached
+      /// manipulator hold at a percent
+      /// 
+      /// 
+      /// 
     }
 
-    public Command collectAlgaeL2(){
-      return Commands.runOnce(() -> {
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL2);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect);
-        m_manipulator.spinUntilDetected();
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
-      });
+    //make algeacollect, make collect pos work, score in processor postion - elevator&anip
+
+    public static Command collectAlgeaL2(){
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL2),
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect),
+        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
+      );
+    }
+    public static Command collectAlgeaL3(){
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3),
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect),
+        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
+      );
     }
 
-    public Command collectAlgeaL3(){
-      return Commands.runOnce(() -> {
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect);
-        m_manipulator.spinUntilDetected();
-        //m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);   where does it go with algea in it?
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome);
-      });
-    }
 
-    public Command algeaProcessor(){
-      return Commands.runOnce(() -> {
-
-      });
+    public static Command goToProcessorPose(){
+      return Commands.parallel(
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorProcess),
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgaeProcess)
+      );
     }
 
     public Command elevatorTravel(double targetPos){
@@ -147,8 +114,6 @@ public class ComplexCommands {
 
 
 
-
-
     /*public Command exampleCommand( type   name){
       return Commands.runOnce(()->{
 
@@ -156,7 +121,36 @@ public class ComplexCommands {
     }*/
 
 
-    
+    public static Command goToHomePoseDynamic(){
+      return Commands.sequence(
+      m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),// this does not appear to be working correctly
+      m_elevator.elevatorGoToPositionUntilThereDynamic(Constants.ElevatorConstants.elevatorHome),
+      m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorHome));
+    }
+
+    public Command elevatorTravelDynamic(double targetPos){
+      return Commands.runOnce(()-> {
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
+        m_elevator.elevatorGoUpDynamic(targetPos);
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
+      });
+    }
+
+    public static Command elevatorGoUp(double setpoint){
+  
+      System.out.println("i am going insane");
+      
+      return Commands.runOnce(()->{
+        m_elevator.elevatorGoUpDynamic(setpoint);
+      });
+    }
+    public static Command elevatorGoDown(double setpoint){
+      System.out.println("help");
+      return Commands.runOnce(()->{
+        m_elevator.elevatorGoDownDynamic(setpoint);
+      });
+    }
+
   
 
 

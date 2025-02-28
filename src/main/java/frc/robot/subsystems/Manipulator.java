@@ -32,6 +32,7 @@ public class Manipulator extends SubsystemBase {
 
   public double targetPos;
   public double tolerance = 0.1;
+  public double cutoffCurrent = 45;
 
   private RelativeEncoder encoder;
 
@@ -54,58 +55,53 @@ public class Manipulator extends SubsystemBase {
 
 
     wristConfig.idleMode(IdleMode.kBrake);
+    wristConfig.smartCurrentLimit(40);
 
     wristConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        // Set PID values for position control. We don't need to pass a closed
-        // loop slot, as it will default to slot 0.
         .p(0.4)
-        .i(.001)
+        .i(.001) //added to make wrist hold position when at algea
         .d(0)
-        .outputRange(-1, 1);
-        // Set PID values for velocity control in slot 1
-        //.p(0.0001, ClosedLoopSlot.kSlot1)
-        //.i(0, ClosedLoopSlot.kSlot1)
-        //.d(0, ClosedLoopSlot.kSlot1)
-        //.velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-        //.outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+        .outputRange(-1, 1)
+        .iZone(0.5); //untested might reduce overshoot
 
     wristConfig.closedLoop.maxMotion
-        // Set MAXMotion parameters for position control. We don't need to pass
-        // a closed loop slot, as it will default to slot 0.
         .maxVelocity(1000)
         .maxAcceleration(1000)
         .allowedClosedLoopError(.1);
-        // Set MAXMotion parameters for velocity control in slot 1
-        //.maxAcceleration(500, ClosedLoopSlot.kSlot1)
-        //.maxVelocity(6000, ClosedLoopSlot.kSlot1)
-        //.allowedClosedLoopError(0.1, ClosedLoopSlot.kSlot1);
-
+  
         wristConfig.softLimit
         .reverseSoftLimit(0)
         .reverseSoftLimitEnabled(true) //have to enable soft limits for them to work ***
         .forwardSoftLimit(16)
         .forwardSoftLimitEnabled(true);
-  
-      
+   
     manipulatorWrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     encoder.setPosition(0);
-
-
-    
   }
 
-public Command manipulatorReset(){
+public Command manipulatorSpinForTime(double speed, double time){
+  return Commands.sequence(
+    manipulatorSpin(speed),
+    Commands.waitSeconds(time),
+    manipulatorSpin(0)
+  );
+  
+}
+
+
+
+public Command manipulatorWristReset(){
   return runOnce(()->{
     encoder.setPosition(0);
   });
 }
 
-  public Command spinUntilDetected() {
+  public Command spinUntilDetected(double speed) {
 
   return runEnd(
     () -> {
-      manipulatorSpin.set(0.2);
+      manipulatorSpin.set(speed);
     },
     () -> {
       manipulatorSpin.set(0);
@@ -149,18 +145,37 @@ public Command manipulatorReset(){
 
   public Command manipulatorGoToPositionUntilThere(double targetPos){
 
-    return runOnce(() ->{
-        this.targetPos = targetPos;
-        positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
-      }
-    ).andThen(Commands.waitUntil(()->manipulatorAtPosition()));
+    return runEnd(
+      () -> {this.targetPos = targetPos;positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);},
+      () -> {this.targetPos = targetPos;positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);}
+      ).until(() -> manipulatorAtPosition());
   }
 
-  
+  public Command manipulatorSpinUntilCurrentReached(double speed, double holdSpeed){
+    return runEnd(
+      () -> {manipulatorSpin.set(speed);},
+      () -> {manipulatorSpin.set(holdSpeed);}
+      ).until(() -> manipulatorAtCurrent());
+  }
+
+
+  public Command manipulatorSpinUntilCurrentReachedWithWait(double speed, double holdspeed){
+    return Commands.sequence(
+      manipulatorSpin(speed),
+      Commands.waitSeconds(0.5),
+      manipulatorSpinUntilCurrentReached(speed, holdspeed)
+      );
+  }
+
+
+
+  public boolean manipulatorAtCurrent(){
+    return getManipulatorCurrent() >= cutoffCurrent;
+  }
 
 
   public boolean manipulatorAtPosition(){
-    return getManipulatorPosition() - targetPos < tolerance;
+    return Math.abs(getManipulatorPosition() - targetPos) < tolerance;
 
     // we can rewrite this in if /then form for clarity and understanding
   }
@@ -168,6 +183,10 @@ public Command manipulatorReset(){
 
   public double getManipulatorPosition(){
     return manipulatorWrist.getEncoder().getPosition();
+  }
+
+  public double getManipulatorCurrent(){
+    return manipulatorSpin.getOutputCurrent();
   }
       
   /*@SuppressWarnings("static-access")
@@ -194,6 +213,8 @@ public Command manipulatorReset(){
   public void periodic() {
 
     SmartDashboard.putBoolean("isLazerConnected", Constants.isLazerConnected);
+    SmartDashboard.putBoolean("manipulatorAtPosition", manipulatorAtPosition());
+    SmartDashboard.putNumber("manipulatorSpincurrent", getManipulatorCurrent());
 
 
     try{

@@ -31,7 +31,7 @@ Double [] values={0.0,0.0,0.0};
   }
 
 public Pose2d getEstimatedPose(){
- 
+ //if there is not a tag or the robot is rotating above 720 deg/s, return null, else return the estimated pose
       if(!(mt2.tagCount == 0 ||   (180/Math.PI)*RobotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond >= 720)){
           return mt2.pose;
       }

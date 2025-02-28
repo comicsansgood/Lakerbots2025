@@ -10,6 +10,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,7 +30,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Climber2;
 import frc.robot.subsystems.FlapHook;
 
@@ -48,8 +49,8 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
-    private final CommandXboxController joystick2 = new CommandXboxController(1);
+    private final CommandXboxController driverJoystick = new CommandXboxController(0);
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -63,7 +64,24 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+
+
+        NamedCommands.registerCommand("scoreL4", ComplexCommands.score(4));
+
+        NamedCommands.registerCommand("scoreL2", ComplexCommands.score(2));
+        NamedCommands.registerCommand("home", ComplexCommands.goToHomePose());
+        NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.1, 1));
+
+        //new EventTrigger("triggerScoreL4").onTrue(ComplexCommands.score(4));
+        //new EventTrigger("triggerScoreL2").onTrue(ComplexCommands.score(2));
+        //new EventTrigger("triggerHome").onTrue(ComplexCommands.goToHomePose());
+
+
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
+
+
+
+
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         SmartDashboard.putData("drive to 0,0", new DriveToTarget(drivetrain, robotSpeeds,drivetrain.getState().Pose,
@@ -77,7 +95,7 @@ public class RobotContainer {
 
         SmartDashboard.putData("testing drive in command", new DriveTest(drivetrain, drive, robotSpeeds, MaxSpeed));
 
-        SmartDashboard.putData("spin until detect", manipulator.spinUntilDetected());
+        SmartDashboard.putData("spin until detect", manipulator.spinUntilDetected(0.2));
 
 
 
@@ -131,12 +149,29 @@ public class RobotContainer {
 
 
         //SmartDashboard.putData("center coral", ComplexCommands.centerCoral());
-        SmartDashboard.putData("travel sequence test", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel)
-        .andThen(elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL2)));
+        //SmartDashboard.putData("travel sequence test", ComplexCommands.travelSequence());
+        SmartDashboard.putData("elevator go home sequence", ComplexCommands.goToHomePose());
+        SmartDashboard.putData("indexCoral", ComplexCommands.indexCoral());
+        SmartDashboard.putData("manipulatorSpinfortime", manipulator.manipulatorSpinForTime(0.2,3));
+        SmartDashboard.putData("scoretest (1)", ComplexCommands.score(1));
+        SmartDashboard.putData("scoretest (2)", ComplexCommands.score(2));
+        SmartDashboard.putData("scoretest (3)", ComplexCommands.score(3));
+        SmartDashboard.putData("scoretest (4)", ComplexCommands.score(4));
+        SmartDashboard.putData("manipualtorspinuntilcurrent", manipulator.manipulatorSpinUntilCurrentReached(-0.3,-0.1));
+        SmartDashboard.putData("goToProccesserPose", ComplexCommands.goToProcessorPose());
+        SmartDashboard.putData("collectAlg2", ComplexCommands.collectAlgeaL2());
+        SmartDashboard.putData("collectAlg3", ComplexCommands.collectAlgeaL3());
+        SmartDashboard.putData("Elevator up dynamic", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));
+        SmartDashboard.putData("Elevator down dynamic", ComplexCommands.elevatorGoDown(Constants.ElevatorConstants.elevatorHome));
+        SmartDashboard.putData("Elevator up dynamicBetter", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));
 
-        SmartDashboard.putData("manipulatorReset", manipulator.manipulatorReset());
 
 
+
+        //test
+
+
+        SmartDashboard.putData("manipulatorReset", manipulator.manipulatorWristReset());
         SmartDashboard.putNumber("Elevator Current", elevator.elevatorGetCurrent());
 
         //SmartDashboard.putNumber("climber current", climber.climberGetCurrent());
@@ -156,47 +191,51 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
         
 
-        //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-       /*  joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));*/
-
-        joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
+    
+        driverJoystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0.5).withVelocityY(0))
         );
-        joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
+        driverJoystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
         );
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        driverJoystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        //joystick.x().onTrue(manipulator.spinUntilDetected());
-        //joystick.a().onTrue(climber.climberDown(0.3));    // one speed will be negative, one positive 
-        //joystick.y().onTrue(climber.climberUp(-0.3));
-       // joystick.x().onTrue(climber.climberStop(0));
 
-        joystick2.a().onTrue(flapHook.hookGoOut(0.3));      // one speed will be negative, one positive
-        joystick2.y().onTrue(flapHook.hookGoIn(0.3));
-        joystick2.x().onTrue(flapHook.hookStop(0));
+        driverJoystick.leftBumper().onTrue(ComplexCommands.indexCoral());
+        driverJoystick.rightBumper().onTrue(manipulator.manipulatorSpinForTime(0.1, 1));
+
+        operatorJoystick.a().onTrue(ComplexCommands.goToProcessorPose());
+        operatorJoystick.x().onTrue(ComplexCommands.score(2));
+        operatorJoystick.y().onTrue(ComplexCommands.score(3));
+        operatorJoystick.b().onTrue(ComplexCommands.score(4));
+        operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePose());
+        //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
+        operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2());
+        operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3());
+        
+
+
+        
     }
-
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
         return autoChooser.getSelected();
