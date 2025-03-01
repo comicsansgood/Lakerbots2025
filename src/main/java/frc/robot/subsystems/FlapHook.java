@@ -66,8 +66,8 @@ public class FlapHook extends SubsystemBase {
     motorConfig.closedLoop.maxMotion
         // Set MAXMotion parameters for position control. We don't need to pass
         // a closed loop slot, as it will default to slot 0.
-        .maxVelocity(2000)
-        .maxAcceleration(1000)
+        .maxVelocity(5000)
+        .maxAcceleration(5000)
         .allowedClosedLoopError(0.1);
         // Set MAXMotion parameters for velocity control in slot 1
         //.maxAcceleration(500, ClosedLoopSlot.kSlot1)
@@ -75,9 +75,9 @@ public class FlapHook extends SubsystemBase {
        // .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot1);
 
     motorConfig.softLimit
-    .reverseSoftLimit(-156) // -16 x 9 for gear ratio change
+    .reverseSoftLimit(-143) // -16 x 9 for gear ratio change
     .reverseSoftLimitEnabled(true)
-    .forwardSoftLimit(156)
+    .forwardSoftLimit(143)
     .forwardSoftLimitEnabled(true);
 
 

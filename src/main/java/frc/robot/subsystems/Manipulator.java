@@ -26,6 +26,7 @@ public class Manipulator extends SubsystemBase {
   public SparkMax manipulatorWrist;
   public SparkClosedLoopController positionController;
   public SparkMaxConfig wristConfig;
+  public SparkMaxConfig spinConfig;
 
   public boolean isCoralDetected;
   public boolean isAlgeaNotDetected;
@@ -48,6 +49,7 @@ public class Manipulator extends SubsystemBase {
   
 
     wristConfig = new SparkMaxConfig();
+    spinConfig = new SparkMaxConfig();
 
     wristConfig.encoder
         .positionConversionFactor(1)
@@ -56,6 +58,7 @@ public class Manipulator extends SubsystemBase {
 
     wristConfig.idleMode(IdleMode.kBrake);
     wristConfig.smartCurrentLimit(40);
+    spinConfig.smartCurrentLimit(40);
 
     wristConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -77,6 +80,7 @@ public class Manipulator extends SubsystemBase {
         .forwardSoftLimitEnabled(true);
    
     manipulatorWrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    manipulatorSpin.configure(spinConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     encoder.setPosition(0);
   }
 

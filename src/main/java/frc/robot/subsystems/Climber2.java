@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Climber2 extends SubsystemBase {
 
   public SparkMax climber2Motor;
+  public SparkLimitSwitch limitSwitch;
   public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
@@ -33,11 +35,15 @@ public class Climber2 extends SubsystemBase {
 
     climber2Motor = new SparkMax(5, MotorType.kBrushless);
 
+    limitSwitch = climber2Motor.getReverseLimitSwitch();
+
     closedLoopController = climber2Motor.getClosedLoopController();
 
     encoder = climber2Motor.getEncoder();//TODO
 
     motorConfig = new SparkMaxConfig();
+
+    
 
     motorConfig.encoder
         .positionConversionFactor(1)
@@ -66,8 +72,8 @@ public class Climber2 extends SubsystemBase {
     motorConfig.closedLoop.maxMotion
         // Set MAXMotion parameters for position control. We don't need to pass
         // a closed loop slot, as it will default to slot 0.
-        .maxVelocity(2000)
-        .maxAcceleration(2000)
+        .maxVelocity(4000)
+        .maxAcceleration(4000)
         .allowedClosedLoopError(1)
         // Set MAXMotion parameters for velocity control in slot 1
         .maxAcceleration(500, ClosedLoopSlot.kSlot1)
@@ -78,10 +84,15 @@ public class Climber2 extends SubsystemBase {
     //motorConfig.inverted(true);
 
     motorConfig.softLimit
-      .reverseSoftLimit(-167)
+      .reverseSoftLimit(-180)
       .reverseSoftLimitEnabled(true) //have to enable soft limits for them to work ***
       .forwardSoftLimit(0)
       .forwardSoftLimitEnabled(true);
+    
+    motorConfig.limitSwitch
+      .reverseLimitSwitchType(Type.kNormallyOpen)
+      .reverseLimitSwitchEnabled(true)
+      .forwardLimitSwitchEnabled(false);
 
     
     climber2Motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -135,6 +146,8 @@ public class Climber2 extends SubsystemBase {
   public void periodic() {
 
     SmartDashboard.putNumber("climber current",climberGetCurrent());
+
+    SmartDashboard.putBoolean("limit switch hit", limitSwitch.isPressed());
  
   }
 

@@ -25,7 +25,6 @@ public class ComplexCommands {
 
     public ComplexCommands(){}
 
-    
   //---------this needs to be commented and tested----//
     public static Command score(int level){
       switch(level){
@@ -41,7 +40,7 @@ public class ComplexCommands {
     }
     
 //--- INDEX the CORAL---///
-    public static Command indexCoral(){//TODO:test
+    public static Command indexCoral(){//TODO:figure out interupt behavior with going home
       return Commands.sequence(
         m_manipulator.spinUntilDetected(0.5),
         m_manipulator.spinUntilNotDetected(0.1),
@@ -52,6 +51,19 @@ public class ComplexCommands {
     
 
     //---Return to home with safe manipulator position----//
+    public static Command scoreDynamic(int level){
+      switch(level){
+        case 1:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL1;break;
+        case 2:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL2;break;
+        case 3:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL3;break;
+        case 4:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL4;break;
+      }
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        new ElevatorMoveDynamic(m_elevator, elevatorPosition)
+      ); 
+    }
+
 
     public static Command goToHomePose(){
       return Commands.sequence(
@@ -67,14 +79,6 @@ public class ComplexCommands {
         m_manipulator.manipulatorSpinUntilCurrentReached(0.2, 0.1),
         m_manipulator.manipulatorSpin(0.05)//hold at 5 %
       );
-
-      ///return Commands.sequence(null)
-      /// manipulator spin for time
-      /// manipulator spin until current threashold reached
-      /// manipulator hold at a percent
-      /// 
-      /// 
-      /// 
     }
 
     //make algeacollect, make collect pos work, score in processor postion - elevator&anip
@@ -96,14 +100,12 @@ public class ComplexCommands {
       );
     }
 
-
     public static Command goToProcessorPose(){
       return Commands.parallel(
         m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorProcess),
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgaeProcess)
       );
     }
-
     public Command elevatorTravel(double targetPos){
       return Commands.runOnce(()-> {
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
@@ -114,34 +116,56 @@ public class ComplexCommands {
 
 
 
-    /*public Command exampleCommand( type   name){
-      return Commands.runOnce(()->{
 
-      }, );
-    }*/
+
 
 
     public static Command goToHomePoseDynamic(){
       return Commands.sequence(
       m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),// this does not appear to be working correctly
-      m_elevator.elevatorGoToPositionUntilThereDynamic(Constants.ElevatorConstants.elevatorHome),
+      new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorHome),
       m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorHome));
+    }
+    
+
+    public static Command collectAlgeaL2Dynamic(){
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL2).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect)),
+        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
+      );
+    }
+    public static Command collectAlgeaL3Dynamic(){
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL3).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect)),
+        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
+      );
+    }
+
+    public static Command goToProcessorPoseDynamic(){
+      return Commands.parallel(
+        new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorProcess),
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgaeProcess)
+      );
     }
 
     public Command elevatorTravelDynamic(double targetPos){
       return Commands.runOnce(()-> {
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);
-        m_elevator.elevatorGoUpDynamic(targetPos);
+        new ElevatorMoveDynamic(m_elevator, targetPos);
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
       });
     }
 
+
+    /* 
     public static Command elevatorGoUp(double setpoint){
   
       System.out.println("i am going insane");
       
       return Commands.runOnce(()->{
-        m_elevator.elevatorGoUpDynamic(setpoint);
+        m_elevator.elevatorUpDynamic(setpoint);
       });
     }
     public static Command elevatorGoDown(double setpoint){
@@ -149,8 +173,15 @@ public class ComplexCommands {
       return Commands.runOnce(()->{
         m_elevator.elevatorGoDownDynamic(setpoint);
       });
-    }
+    }*/
 
+    public Command seqTest(){
+      return Commands.sequence(
+        goToHomePose(), 
+        new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL2), 
+        elevatorTravel(elevatorPosition
+        ));
+    }
   
 
 

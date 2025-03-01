@@ -26,6 +26,7 @@ public class Elevator extends SubsystemBase {
   public TalonFX elevatorLead = new TalonFX(13, "canivore");
   public TalonFX elevatorFollow = new TalonFX(14, "canivore");
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
+  private final MotionMagicVoltage m_mmReqDown = new MotionMagicVoltage(0);
   private final DynamicMotionMagicVoltage dynamicReq = new DynamicMotionMagicVoltage(0, 80, 400, 4000);
 
   public TalonFXConfiguration cfg = new TalonFXConfiguration();
@@ -39,27 +40,29 @@ public class Elevator extends SubsystemBase {
 
 
   public Elevator() {
+    cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -28;
+    cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
-    
     /* Configure gear ratio */
     FeedbackConfigs fdb = cfg.Feedback;
     fdb.SensorToMechanismRatio = 1;
 
     /* Configure Motion Magic */
-   /* MotionMagicConfigs mm = cfg.MotionMagic;
+    MotionMagicConfigs mm = cfg.MotionMagic;
     mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(15)) // 5 (mechanism) rotations per second cruise
       .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(15)) // Take approximately 0.5 seconds to reach max vel
       // Take approximately 0.1 seconds to reach max accel 
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(0)); */
+      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(0));
+
 
     Slot0Configs slot0 = cfg.Slot0;
     slot0.kS = 0; // Add 0.25 V output to overcome static friction
     slot0.kV = 0.275; // A velocity target of 1 rps results in 0.12 V output
     slot0.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0.kP = 1; // A position error of 0.2 rotations results in 12 V output
-    slot0.kI = 0; // No output for integrated error
-    slot0.kD = 0; // A velocity error of 1 rps results in 0.5 V output
-    slot0.kG = 0.5;
+    slot0.kP = 1.0;//0.6 // A position error of 0.2 rotations results in 12 V output
+    slot0.kI = 0.0;//0.05 // No output for integrated error
+    slot0.kD = 0.0;//0.2 // A velocity error of 1 rps results in 0.5 V output
+    slot0.kG = 0.5; 
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -83,8 +86,12 @@ public class Elevator extends SubsystemBase {
     });
   }
 
+  public double elevatorGetError(){
+    return elevatorLead.getPosition().getValueAsDouble() - setpoint;
+  }
 
-  public Command elevatorGoUpDynamic(double setpoint){
+
+  /*public Command elevatorGoUpDynamic(double setpoint){
     return Commands.runOnce(()->{
       this.setpoint = setpoint;
       dynamicReq.Velocity = 15;
@@ -94,7 +101,6 @@ public class Elevator extends SubsystemBase {
       elevatorLead.setControl(dynamicReq.withPosition(setpoint));
     });
   }
-
   public Command elevatorGoDownDynamic(double setpoint){
     return Commands.runOnce(()->{
       this.setpoint = setpoint;
@@ -104,10 +110,24 @@ public class Elevator extends SubsystemBase {
       elevatorLead.setControl(dynamicReq.withPosition(setpoint));
     });
   }
+    */
 
-
-  
-
+  public void elevatorUpDynamic(double setpoint){
+    this.setpoint = setpoint;
+    dynamicReq.Velocity = 60;
+    dynamicReq.Acceleration = 80;
+    dynamicReq.Jerk = 0;
+    //dynamicReq.FeedForward = 100;
+    elevatorLead.setControl(dynamicReq.withPosition(setpoint));
+  }
+  public void elevatorDownDynamic(double setpoint){
+    this.setpoint = setpoint;
+    dynamicReq.Velocity = 15;
+    dynamicReq.Acceleration = 15;
+    dynamicReq.Jerk = 0;
+    //dynamicReq.FeedForward = 100;
+    elevatorLead.setControl(dynamicReq.withPosition(setpoint));
+  }
 
 
 
@@ -118,10 +138,10 @@ public class Elevator extends SubsystemBase {
     ).until(() -> elevatorAtPosition());
   }
 
-  public Command elevatorGoToPositionUntilThereDynamic(double setpoint){
+  public Command elevatorDownUntilThereDynamic(double setpoint){
     return runEnd(
-      () -> {dynamicReq.Velocity = 15;
-        dynamicReq.Acceleration = 15;
+      () -> {dynamicReq.Velocity = 60;
+        dynamicReq.Acceleration = 80;
         dynamicReq.Jerk = 0;
         elevatorLead.setControl(dynamicReq.withPosition(setpoint));},
       () -> {elevatorLead.setControl(dynamicReq.withPosition(setpoint));}
@@ -141,6 +161,8 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("elevatorAtPosition", elevatorAtPosition());
+    SmartDashboard.putNumber("elevatorError", elevatorGetError());
+    SmartDashboard.putNumber("elevator position", elevatorLead.getPosition().getValueAsDouble());
 
 
     /*if (++m_printCount >= 10) {

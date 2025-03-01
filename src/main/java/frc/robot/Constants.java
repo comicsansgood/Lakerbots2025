@@ -19,13 +19,13 @@ public class Constants {
     public class FlapHookConstants{
         public static final double hookflapOpen = 0; // all x 9 for new gear ratio
         public static final double hookPrepare = -58.5; //-6.5
-        public static final double hookLatch = -156; //-16
+        public static final double hookLatch = -143; //-16
         public static final double flapCollect = -45; //-5
     }
 
     public class ClimberConstants{
         public static final double climberHome = 0;
-        public static final double climberDown = -167;
+        public static final double climberDown = -180;
         public static final double climberMid = -80;
     }
 
@@ -33,17 +33,17 @@ public class Constants {
         public static final double elevatorHome = -0.5;
         public static final double elevatorCoralL1 = -3;
         public static final double elevatorCoralL2 = -5.5;
-        public static final double elevatorCoralL3 = -15;
-        public static final double elevatorCoralL4 = -25;
+        public static final double elevatorCoralL3 = -14;
+        public static final double elevatorCoralL4 = -24;
         public static final double elevatorProcess = -2;
-        public static final double elevatorAlgaeL2 = -8;
+        public static final double elevatorAlgaeL2 = -7;
         public static final double elevatorAlgaeL3 = -14.5;
     }
 
     public class ManipulatorConstants{
         public static final double manipulatorHome = 0;
         public static final double manipulatorCollect = 0;
-        public static final double manipulatorTravel = 3.5;
+        public static final double manipulatorTravel = 3;
         public static final double manipulatorCoralL1 = 2;
         public static final double manipulatorCoralL2 = 2;
         public static final double manipulatorCoralL3 = 2;

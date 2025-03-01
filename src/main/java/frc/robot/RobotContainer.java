@@ -25,6 +25,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.ComplexCommands;
 import frc.robot.Commands.DriveTest;
 import frc.robot.Commands.DriveToTarget;
+import frc.robot.Commands.ElevatorMoveDownDynamic;
+import frc.robot.Commands.ElevatorMoveDynamic;
+import frc.robot.Commands.ElevatorMoveUpDynamic;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -161,9 +164,28 @@ public class RobotContainer {
         SmartDashboard.putData("goToProccesserPose", ComplexCommands.goToProcessorPose());
         SmartDashboard.putData("collectAlg2", ComplexCommands.collectAlgeaL2());
         SmartDashboard.putData("collectAlg3", ComplexCommands.collectAlgeaL3());
-        SmartDashboard.putData("Elevator up dynamic", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));
+
+        SmartDashboard.putData("homeDynamic", ComplexCommands.goToHomePoseDynamic());
+        SmartDashboard.putData("L1 Dynamic", ComplexCommands.scoreDynamic(1));
+        SmartDashboard.putData("L2 Dynamic", ComplexCommands.scoreDynamic(2));
+        SmartDashboard.putData("L3 Dynamic", ComplexCommands.scoreDynamic(3));
+        SmartDashboard.putData("L4 Dynamic", ComplexCommands.scoreDynamic(4));
+
+        SmartDashboard.putData("dynamic logic test L1", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL1));
+        SmartDashboard.putData("dynamic logic test L2", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL2));
+        SmartDashboard.putData("dynamic logic test L3", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL3));
+        SmartDashboard.putData("dynamic logic test L4", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL4));
+
+
+
+
+
+        /*SmartDashboard.putData("Elevator up dynamic", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));
         SmartDashboard.putData("Elevator down dynamic", ComplexCommands.elevatorGoDown(Constants.ElevatorConstants.elevatorHome));
-        SmartDashboard.putData("Elevator up dynamicBetter", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));
+        SmartDashboard.putData("Elevator up dynamicBetter", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));*/
+
+        SmartDashboard.putData("elevator up dynamic best", new ElevatorMoveUpDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL4));
+        SmartDashboard.putData("elevator down dynamic best", new ElevatorMoveDownDynamic(elevator, Constants.ElevatorConstants.elevatorHome));
 
 
 
@@ -186,6 +208,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
@@ -200,11 +223,20 @@ public class RobotContainer {
 
     
         driverJoystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0.5).withVelocityY(0))
+            forwardStraight.withVelocityX(1).withVelocityY(0))
         );
         driverJoystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(-0.5).withVelocityY(0))
+            forwardStraight.withVelocityX(-1).withVelocityY(0))
         );
+        driverJoystick.pov(90).whileTrue(drivetrain.applyRequest(() ->
+            forwardStraight.withVelocityX(0).withVelocityY(1))
+        );
+        driverJoystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
+            forwardStraight.withVelocityX(0).withVelocityY(-1))
+        );
+    
+        
+  
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -212,6 +244,7 @@ public class RobotContainer {
         driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
 
         // reset the field-centric heading on left bumper press
 
@@ -222,15 +255,18 @@ public class RobotContainer {
 
         driverJoystick.leftBumper().onTrue(ComplexCommands.indexCoral());
         driverJoystick.rightBumper().onTrue(manipulator.manipulatorSpinForTime(0.1, 1));
+        driverJoystick.x().onTrue(manipulator.manipulatorSpinForTime(-0.1, 0.5));
 
-        operatorJoystick.a().onTrue(ComplexCommands.goToProcessorPose());
-        operatorJoystick.x().onTrue(ComplexCommands.score(2));
-        operatorJoystick.y().onTrue(ComplexCommands.score(3));
-        operatorJoystick.b().onTrue(ComplexCommands.score(4));
-        operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePose());
+
+
+        operatorJoystick.a().onTrue(ComplexCommands.goToProcessorPoseDynamic());
+        operatorJoystick.x().onTrue(ComplexCommands.scoreDynamic(2));
+        operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
+        operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
+        operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic());
         //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
-        operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2());
-        operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3());
+        operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
+        operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
         
 
 
