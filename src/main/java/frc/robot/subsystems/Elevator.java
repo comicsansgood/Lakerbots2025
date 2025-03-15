@@ -114,16 +114,16 @@ public class Elevator extends SubsystemBase {
 
   public void elevatorUpDynamic(double setpoint){
     this.setpoint = setpoint;
-    dynamicReq.Velocity = 60;
-    dynamicReq.Acceleration = 80;
+    dynamicReq.Velocity = 45;//60
+    dynamicReq.Acceleration = 50;//80
     dynamicReq.Jerk = 0;
     //dynamicReq.FeedForward = 100;
     elevatorLead.setControl(dynamicReq.withPosition(setpoint));
   }
   public void elevatorDownDynamic(double setpoint){
     this.setpoint = setpoint;
-    dynamicReq.Velocity = 15;
-    dynamicReq.Acceleration = 15;
+    dynamicReq.Velocity = 20;
+    dynamicReq.Acceleration = 20;
     dynamicReq.Jerk = 0;
     //dynamicReq.FeedForward = 100;
     elevatorLead.setControl(dynamicReq.withPosition(setpoint));

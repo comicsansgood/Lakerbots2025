@@ -42,10 +42,10 @@ public class ComplexCommands {
 //--- INDEX the CORAL---///
     public static Command indexCoral(){//TODO:figure out interupt behavior with going home
       return Commands.sequence(
-        m_manipulator.spinUntilDetected(0.5),
+        m_manipulator.spinUntilDetected(0.5),   
         m_manipulator.spinUntilNotDetected(0.1),
-        m_manipulator.manipulatorSpinForTime(-0.1, 0.35)
-      );   
+        m_manipulator.manipulatorSpinForTime(-0.1, 0.75) //Changed form 0.35 to 0.75
+      );
     }
 
     
@@ -135,6 +135,18 @@ public class ComplexCommands {
         m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
       );
     }
+
+    public static Command auto_goToAlgeaL2Pose(){//added 3/6/25 for algea in auto
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL2).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect))
+      );
+    }
+
+    public static Command auto_algeaCollect(){//added 3/6/25 for algea in auto
+      return m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3);
+    }
+
     public static Command collectAlgeaL3Dynamic(){
       return Commands.sequence(
         m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),

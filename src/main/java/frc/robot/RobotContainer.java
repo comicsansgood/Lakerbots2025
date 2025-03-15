@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.PascalCaseStrategy;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -68,15 +69,28 @@ public class RobotContainer {
 
     public RobotContainer() {
 
-
-        NamedCommands.registerCommand("scoreL4", ComplexCommands.score(4));
-
-        NamedCommands.registerCommand("scoreL2", ComplexCommands.score(2));
+        
+        NamedCommands.registerCommand("L4Pose", ComplexCommands.scoreDynamic(4));
         NamedCommands.registerCommand("home", ComplexCommands.goToHomePose());
-        NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.1, 1));
+        NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.6, 0.75));// Time from 0.25 - 0.5 to then 0.75 --- SPEED increased from .35 to .5
+        NamedCommands.registerCommand("collect", ComplexCommands.indexCoral());
+        NamedCommands.registerCommand("algeaCollect", ComplexCommands.auto_algeaCollect());
+        NamedCommands.registerCommand("algeaL2Pose", ComplexCommands.auto_goToAlgeaL2Pose());
+        NamedCommands.registerCommand("algeaProcess", ComplexCommands.goToProcessorPoseDynamic());
+
+        NamedCommands.registerCommand("elevatorGoDown", elevator.elevatorDownUntilThereDynamic(Constants.ElevatorConstants.elevatorHome));
+
+        NamedCommands.registerCommand("manipulatorHome", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome));
+
+
+        NamedCommands.registerCommand("scoreL4 Dynamic", ComplexCommands.scoreDynamic(4));
+
+        NamedCommands.registerCommand("scoreL2", ComplexCommands.scoreDynamic(2));
+        
+
 
         //new EventTrigger("triggerScoreL4").onTrue(ComplexCommands.score(4));
-        //new EventTrigger("triggerScoreL2").onTrue(ComplexCommands.score(2));
+        new EventTrigger("triggerScoreL2").onTrue(ComplexCommands.scoreDynamic(2));
         //new EventTrigger("triggerHome").onTrue(ComplexCommands.goToHomePose());
 
 
@@ -229,10 +243,10 @@ public class RobotContainer {
             forwardStraight.withVelocityX(-1).withVelocityY(0))
         );
         driverJoystick.pov(90).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0).withVelocityY(1))
+            forwardStraight.withVelocityX(0).withVelocityY(-1))
         );
         driverJoystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0).withVelocityY(-1))
+            forwardStraight.withVelocityX(0).withVelocityY(1))
         );
     
         
@@ -240,10 +254,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        /*driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));*/
 
 
         // reset the field-centric heading on left bumper press
@@ -256,6 +270,9 @@ public class RobotContainer {
         driverJoystick.leftBumper().onTrue(ComplexCommands.indexCoral());
         driverJoystick.rightBumper().onTrue(manipulator.manipulatorSpinForTime(0.1, 1));
         driverJoystick.x().onTrue(manipulator.manipulatorSpinForTime(-0.1, 0.5));
+        driverJoystick.y().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
+        driverJoystick.a().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
+        driverJoystick.b().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
 
 
 
@@ -263,10 +280,16 @@ public class RobotContainer {
         operatorJoystick.x().onTrue(ComplexCommands.scoreDynamic(2));
         operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
         operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
-        operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic());
+        operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic().andThen(ComplexCommands.indexCoral()));
+        operatorJoystick.rightBumper().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
+
+        operatorJoystick.pov(0).whileTrue(flapHook.flapHookSpin(0.2));
+        operatorJoystick.pov(180).whileTrue(flapHook.flapHookSpin(-0.2));
+        operatorJoystick.povCenter().onTrue(flapHook.flapHookSpin(0.0));
+
         
 
 

@@ -59,6 +59,7 @@ public class Manipulator extends SubsystemBase {
     wristConfig.idleMode(IdleMode.kBrake);
     wristConfig.smartCurrentLimit(40);
     spinConfig.smartCurrentLimit(40);
+    
 
     wristConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -69,8 +70,8 @@ public class Manipulator extends SubsystemBase {
         .iZone(0.5); //untested might reduce overshoot
 
     wristConfig.closedLoop.maxMotion
-        .maxVelocity(1000)
-        .maxAcceleration(1000)
+        .maxVelocity(1500)
+        .maxAcceleration(1500)
         .allowedClosedLoopError(.1);
   
         wristConfig.softLimit
@@ -167,7 +168,8 @@ public Command manipulatorWristReset(){
     return Commands.sequence(
       manipulatorSpin(speed),
       Commands.waitSeconds(0.5),
-      manipulatorSpinUntilCurrentReached(speed, holdspeed)
+      manipulatorSpin(speed)
+      //manipulatorSpinUntilCurrentReached(speed, holdspeed)
       );
   }
 
@@ -222,7 +224,7 @@ public Command manipulatorWristReset(){
 
 
     try{
-    isCoralDetected = lazer.getMeasurement().distance_mm <= 30 && lazer.getMeasurement().distance_mm != 0;
+    isCoralDetected = lazer.getMeasurement().distance_mm <= 15 && lazer.getMeasurement().distance_mm != 0;//changed from 30 to 15 b4 first comp
     SmartDashboard.putBoolean("isCoral", isCoralDetected);
     SmartDashboard.putNumber("lazer distance", lazer.getMeasurement().distance_mm);
     Constants.isLazerConnected = true;
