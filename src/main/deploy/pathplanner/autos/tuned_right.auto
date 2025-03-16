@@ -86,12 +86,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "tuned_right_part3Approach"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "scoreCoral"

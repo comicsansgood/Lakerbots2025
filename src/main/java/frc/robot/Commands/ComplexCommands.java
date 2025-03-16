@@ -44,7 +44,7 @@ public class ComplexCommands {
       return Commands.sequence(
         m_manipulator.spinUntilDetected(0.5),   
         m_manipulator.spinUntilNotDetected(0.1),
-        m_manipulator.manipulatorSpinForTime(-0.1, 0.75) //Changed form 0.35 to 0.75
+        m_manipulator.manipulatorSpinForTime(-0.1, 0.5) /////Changed form 0.35 to 0.75
       );
     }
 

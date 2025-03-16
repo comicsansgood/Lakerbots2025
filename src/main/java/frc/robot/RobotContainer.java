@@ -39,7 +39,7 @@ import frc.robot.subsystems.FlapHook;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(0.8).in(RadiansPerSecond);//0.75 ----> 0.8 3/15/25 mid western newengland // 3/4 of a rotation per second max angular velocity
 
     private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -72,7 +72,7 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("L4Pose", ComplexCommands.scoreDynamic(4));
         NamedCommands.registerCommand("home", ComplexCommands.goToHomePose());
-        NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.6, 0.75));// Time from 0.25 - 0.5 to then 0.75 --- SPEED increased from .35 to .5
+        NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.8, 0.75));// Time from 0.25 - 0.5 to then 0.75 --- SPEED increased from .35 to .5
         NamedCommands.registerCommand("collect", ComplexCommands.indexCoral());
         NamedCommands.registerCommand("algeaCollect", ComplexCommands.auto_algeaCollect());
         NamedCommands.registerCommand("algeaL2Pose", ComplexCommands.auto_goToAlgeaL2Pose());
@@ -268,7 +268,7 @@ public class RobotContainer {
 
 
         driverJoystick.leftBumper().onTrue(ComplexCommands.indexCoral());
-        driverJoystick.rightBumper().onTrue(manipulator.manipulatorSpinForTime(0.1, 1));
+        driverJoystick.rightBumper().onTrue(manipulator.manipulatorSpinForTime(0.2, 1));
         driverJoystick.x().onTrue(manipulator.manipulatorSpinForTime(-0.1, 0.5));
         driverJoystick.y().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
         driverJoystick.a().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
