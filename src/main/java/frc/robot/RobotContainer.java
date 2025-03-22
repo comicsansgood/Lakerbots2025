@@ -29,6 +29,8 @@ import frc.robot.Commands.DriveToTarget;
 import frc.robot.Commands.ElevatorMoveDownDynamic;
 import frc.robot.Commands.ElevatorMoveDynamic;
 import frc.robot.Commands.ElevatorMoveUpDynamic;
+import frc.robot.Commands.CustomAutos.AutoCommand;
+import frc.robot.Commands.CustomAutos.DriveToTag;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -36,6 +38,7 @@ import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Climber2;
 import frc.robot.subsystems.FlapHook;
+import frc.robot.subsystems.Leds;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -64,6 +67,7 @@ public class RobotContainer {
     public static FlapHook flapHook = new FlapHook();
     public static Elevator elevator = new Elevator();
     public static LimelightSubsystem limelight = new LimelightSubsystem();
+    public static Leds leds = new Leds();
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
@@ -101,6 +105,8 @@ public class RobotContainer {
 
         SmartDashboard.putData("Auto Mode", autoChooser);
 
+        SmartDashboard.putData("tagtestyo", Commands.runOnce(()->AutoCommand.autoTest(drivetrain, limelight, robotSpeeds)));
+
         SmartDashboard.putData("drive to 0,0", new DriveToTarget(drivetrain, robotSpeeds,drivetrain.getState().Pose,
                new Pose2d(new Translation2d(0,0), new Rotation2d(0)),
                 MaxSpeed
@@ -115,11 +121,15 @@ public class RobotContainer {
         SmartDashboard.putData("spin until detect", manipulator.spinUntilDetected(0.2));
 
 
+        SmartDashboard.putData("driveToTag", new DriveToTag(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation));
+
+
 
         //so broken lol
         ///SmartDashboard.putData("climber down", climber.climber2Spin(0.2));
         ///SmartDashboard.putData("climber 0", climber.climber2Spin(0));
         //SmartDashboard.putData("climber up", climber.climber2Spin(-0.2));
+
 
         SmartDashboard.putData("manipulator wrist up", manipulator.manipulatorWristSpin(-0.05));
         SmartDashboard.putData("manipulator wrist 0", manipulator.manipulatorWristSpin(0.0));
@@ -210,6 +220,15 @@ public class RobotContainer {
         SmartDashboard.putData("manipulatorReset", manipulator.manipulatorWristReset());
         SmartDashboard.putNumber("Elevator Current", elevator.elevatorGetCurrent());
 
+
+        SmartDashboard.putData("led spirit", Commands.runOnce(()->{leds.spiritColors();}));
+        SmartDashboard.putData("black", Commands.runOnce(()->{leds.black();}));
+        SmartDashboard.putData("red", Commands.runOnce(()->{leds.red();}));
+        SmartDashboard.putData("rainfall", Commands.runOnce(()->{leds.rainfallSeqence();}));
+
+
+
+
         //SmartDashboard.putNumber("climber current", climber.climberGetCurrent());
 
         /*SmartDashboard.putData("testingDrivecmd", drivetrain.applyRequest(() ->
@@ -272,7 +291,8 @@ public class RobotContainer {
         driverJoystick.x().onTrue(manipulator.manipulatorSpinForTime(-0.1, 0.5));
         driverJoystick.y().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
         driverJoystick.a().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
-        driverJoystick.b().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
+        //driverJoystick.b().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
+        driverJoystick.b().onTrue(manipulator.manipulatorSpinForTime(0.07, 0.375));
 
 
 
@@ -286,9 +306,9 @@ public class RobotContainer {
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
 
-        operatorJoystick.pov(0).whileTrue(flapHook.flapHookSpin(0.2));
+        /*operatorJoystick.pov(0).whileTrue(flapHook.flapHookSpin(0.2));
         operatorJoystick.pov(180).whileTrue(flapHook.flapHookSpin(-0.2));
-        operatorJoystick.povCenter().onTrue(flapHook.flapHookSpin(0.0));
+        operatorJoystick.povCenter().onTrue(flapHook.flapHookSpin(0.0));*/
 
         
 

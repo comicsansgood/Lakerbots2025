@@ -14,50 +14,31 @@ public class LimelightSubsystem extends SubsystemBase {
   public int[] validIds = {12, 21};
   public LimelightHelpers.PoseEstimate mt2;
 
-
-
-
-
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-NetworkTableEntry tx = table.getEntry("tx");
-NetworkTableEntry ty = table.getEntry("ty");
-NetworkTableEntry ta = table.getEntry("ta");
+  NetworkTableEntry tx = table.getEntry("tx");
+  NetworkTableEntry ty = table.getEntry("ty");
+  NetworkTableEntry ta = table.getEntry("ta");
 
 Double [] values={0.0,0.0,0.0};
 
   public LimelightSubsystem() {
-            LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIds);
-
+    LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIds);
   }
 
 public Pose2d getEstimatedPose(){
- //if there is not a tag or the robot is rotating above 720 deg/s, return null, else return the estimated pose
-      if(!(mt2.tagCount == 0 ||   (180/Math.PI)*RobotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond >= 720)){
-          return mt2.pose;
-      }
-      else{
-          return null;
-      }
-    }
-
-    public double getTimeStamp(){
-        return mt2.timestampSeconds;
-    }
-  
-  
-  
-  
-  public Command exampleMethodCommand() {
-
-    return runOnce(
-        () -> {
-        });
+  //if there is not a tag or the robot is rotating above 720 deg/s, return null, else return the estimated pose
+  if(!(mt2.tagCount == 0 ||   (180/Math.PI)*RobotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond >= 720)){
+    return mt2.pose;
   }
-
-  public boolean exampleCondition() {
-    return false;
+  else{
+    return null;
   }
+}
 
+  public double getTimeStamp(){
+    return mt2.timestampSeconds;
+  }
+  
   public Double[] getValues(){
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
@@ -67,9 +48,6 @@ public Pose2d getEstimatedPose(){
     values[2] = area;
     return values;
   }
-
-
-
 
   @Override
   public void periodic() {
@@ -83,10 +61,8 @@ public Pose2d getEstimatedPose(){
     SmartDashboard.putNumber("LimelightArea", area);
 
 
-    LimelightHelpers.SetRobotOrientation("limelight", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation("limelight", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);//TODO: pose values
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-
-
   }
 
   @Override
