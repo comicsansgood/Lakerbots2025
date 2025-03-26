@@ -75,12 +75,13 @@ public class FlapHook extends SubsystemBase {
        // .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot1);
 
     motorConfig.softLimit
-    .reverseSoftLimit(-143) // -16 x 9 for gear ratio change
+    .reverseSoftLimit(-143) //TODO: make this the setpoint                     
+     //-16 x 9 for gear ratio change
     .reverseSoftLimitEnabled(true)
     .forwardSoftLimit(143)
     .forwardSoftLimitEnabled(true);
 
-
+ 
     //motorConfig.inverted(true);
     flapHookMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     

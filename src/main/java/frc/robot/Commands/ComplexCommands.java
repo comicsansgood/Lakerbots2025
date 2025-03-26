@@ -42,8 +42,8 @@ public class ComplexCommands {
 //--- INDEX the CORAL---///
     public static Command indexCoral(){//TODO:figure out interupt behavior with going home
       return Commands.sequence(
-        m_manipulator.spinUntilDetected(0.1),
-        m_manipulator.manipulatorSpinForTime(0.1, 0.35)
+        m_manipulator.spinUntilDetected(0.15),
+        m_manipulator.manipulatorSpinForTime(0.1, 0.45)
         //m_manipulator.spinUntilNotDetected(0.1),
         //m_manipulator.manipulatorSpinForTime(-0.1, 0.5) /////Changed form 0.35 to 0.75
       );

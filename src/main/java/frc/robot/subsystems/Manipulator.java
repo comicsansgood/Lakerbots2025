@@ -144,7 +144,6 @@ public Command manipulatorWristReset(){
         () -> {
           this.targetPos = targetPos;
           positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
-
         });
   }
 

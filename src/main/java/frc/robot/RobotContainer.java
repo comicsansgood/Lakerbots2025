@@ -42,7 +42,7 @@ import frc.robot.subsystems.Leds;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.8).in(RadiansPerSecond);//0.75 ----> 0.8 3/15/25 mid western newengland // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(0.9).in(RadiansPerSecond);//0.75 ----> 0.8 -----> 0.9v  // 3/4(0.75) of a rotation per second max angular velocity
 
     private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -301,10 +301,11 @@ public class RobotContainer {
         operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
         operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
         operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic().andThen(ComplexCommands.indexCoral()));
-        operatorJoystick.rightBumper().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+        //operatorJoystick.rightBumper().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
+        operatorJoystick.pov(180).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
 
         /*operatorJoystick.pov(0).whileTrue(flapHook.flapHookSpin(0.2));
         operatorJoystick.pov(180).whileTrue(flapHook.flapHookSpin(-0.2));

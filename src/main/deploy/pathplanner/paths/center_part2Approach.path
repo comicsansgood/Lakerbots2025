@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 5.75,
-        "y": 4.0
+        "y": 4.05
       },
       "prevControl": {
         "x": 6.0,
-        "y": 4.0
+        "y": 4.05
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "centerpart2App_END"
     }
   ],
   "rotationTargets": [],

@@ -19,7 +19,7 @@ public class Constants {
     public class FlapHookConstants{
         public static final double hookflapOpen = 0; // all x 9 for new gear ratio
         public static final double hookPrepare = -70; //-6.5
-        public static final double hookLatch = -143; //-16
+        public static final double hookLatch = -150; //-143     -16
         public static final double flapCollect = -45; //-5
     }
 
