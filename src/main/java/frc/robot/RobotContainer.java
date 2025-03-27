@@ -30,6 +30,7 @@ import frc.robot.Commands.ElevatorMoveDownDynamic;
 import frc.robot.Commands.ElevatorMoveDynamic;
 import frc.robot.Commands.ElevatorMoveUpDynamic;
 import frc.robot.Commands.CustomAutos.AutoCommand;
+import frc.robot.Commands.CustomAutos.DriveDistanceWithTagAllign;
 import frc.robot.Commands.CustomAutos.DriveToTag;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -122,6 +123,8 @@ public class RobotContainer {
 
 
         SmartDashboard.putData("driveToTag", new DriveToTag(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation));
+        SmartDashboard.putData("driveToTagwithDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 1.17));
+
 
 
 
@@ -163,6 +166,7 @@ public class RobotContainer {
         SmartDashboard.putData("manipulator travel", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel));
         SmartDashboard.putData("manipulator L1", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCoralL1));
         SmartDashboard.putData("manipulator L4", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCoralL4));
+        SmartDashboard.putData("manipulator barge score", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore));
 
        
         SmartDashboard.putData("elevator home", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome));
@@ -173,6 +177,8 @@ public class RobotContainer {
         SmartDashboard.putData("elevator coral 4", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL4));
         SmartDashboard.putData("elevator alegae2", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL2));
         SmartDashboard.putData("elevator alegae3", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3));
+        SmartDashboard.putData("elevator barge", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorBarge));
+
 
 
         //SmartDashboard.putData("center coral", ComplexCommands.centerCoral());

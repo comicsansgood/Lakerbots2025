@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class LimelightSubsystem extends SubsystemBase {
-  public int[] validIds = {12, 21};
+  //public int[] validIds = {12, 21};
   public LimelightHelpers.PoseEstimate mt2;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -22,7 +22,7 @@ public class LimelightSubsystem extends SubsystemBase {
 Double [] values={0.0,0.0,0.0};
 
   public LimelightSubsystem() {
-    LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIds);
+    //LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIds);
   }
 
 public Pose2d getEstimatedPose(){
@@ -51,14 +51,18 @@ public Pose2d getEstimatedPose(){
 
   @Override
   public void periodic() {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry tx = table.getEntry("tx");
+    NetworkTableEntry ty = table.getEntry("ty");
+    NetworkTableEntry ta = table.getEntry("ta");
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
     double area = ta.getDouble(0.0);
-
     //post to smart dashboard periodically
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area);
+    SmartDashboard.putNumberArray("llll", NetworkTableInstance.getDefault().getTable("limelight").getEntry("targetpose_robotspacez").getDoubleArray(new double[6]));
 
 
     LimelightHelpers.SetRobotOrientation("limelight", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);//TODO: pose values

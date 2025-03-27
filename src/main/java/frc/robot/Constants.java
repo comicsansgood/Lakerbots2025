@@ -37,7 +37,9 @@ public class Constants {
         public static final double elevatorCoralL4 = -24;  //24 to 25.5        to 24.75
         public static final double elevatorProcess = -2;
         public static final double elevatorAlgaeL2 = -8; // -7 to -8
-        public static final double elevatorAlgaeL3 = -14.5;// TODO:make this correct at the real field  
+        public static final double elevatorAlgaeL3 = -14.5;// TODO:make this correct at the real field
+        public static final double elevatorBarge = 0.0; //TODO: put in actual number -k
+  
     }
 
     public class ManipulatorConstants{
@@ -49,14 +51,14 @@ public class Constants {
         public static final double manipulatorCoralL3 = 2;
         public static final double manipulatorCoralL4 = 5;
         public static final double manipulatorAlgeaCollect = 14;
-        
         public static final double manipulatorAlgaeProcess = 18;
+        public static final double manipulatorBargeScore = 0.0; //TODO: put in actual values -k
 
     }
 
     public class TagConstants{
         //x and area of tag
-        public static final Double[] tagTranslation = {0.0,0.0};//TODO: find these values
+        public static final Double[] tagTranslation = {0.0,8.0};//TODO: find these values
     }
     
 }

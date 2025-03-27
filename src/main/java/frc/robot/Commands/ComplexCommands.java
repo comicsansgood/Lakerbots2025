@@ -115,6 +115,13 @@ public class ComplexCommands {
       });
     }
 
+    public static Command bargeScore(){
+      return Commands.runOnce(()-> {
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);        
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorBarge);
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore);
+      });
+    }
 
 
 
