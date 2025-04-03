@@ -43,7 +43,7 @@ public class ComplexCommands {
     public static Command indexCoral(){//TODO:figure out interupt behavior with going home
       return Commands.sequence(
         m_manipulator.spinUntilDetected(0.15),
-        m_manipulator.manipulatorSpinForTime(0.1, 0.45)
+        m_manipulator.manipulatorSpinForTime(0.1, 0.35)//chagned time from .45 3/29/25 
         //m_manipulator.spinUntilNotDetected(0.1),
         //m_manipulator.manipulatorSpinForTime(-0.1, 0.5) /////Changed form 0.35 to 0.75
       );
@@ -115,12 +115,22 @@ public class ComplexCommands {
       });
     }
 
+    
+    public static Command algeaStore(){
+      return Commands.parallel(
+        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL2),
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgaeTuck)
+      );
+    }
+    
+    
     public static Command bargeScore(){
-      return Commands.runOnce(()-> {
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorTravel);        
-        m_elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorBarge);
-        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore);
-      });
+      
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgaeTuck),
+        m_elevator.elevatorGoToPositionUntilThere(Constants.ElevatorConstants.elevatorBarge),
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorBargeScore)
+      );
     }
 
 
@@ -148,6 +158,13 @@ public class ComplexCommands {
       return Commands.sequence(
         m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
         new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL2).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect))
+      );
+    }
+
+    public static Command auto_goToAlgeaL3Pose(){
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
+        new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL3).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect))
       );
     }
 

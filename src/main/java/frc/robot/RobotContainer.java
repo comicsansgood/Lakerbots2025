@@ -30,8 +30,11 @@ import frc.robot.Commands.ElevatorMoveDownDynamic;
 import frc.robot.Commands.ElevatorMoveDynamic;
 import frc.robot.Commands.ElevatorMoveUpDynamic;
 import frc.robot.Commands.CustomAutos.AutoCommand;
+import frc.robot.Commands.CustomAutos.DriveBack;
+import frc.robot.Commands.CustomAutos.DriveBlindForTime;
 import frc.robot.Commands.CustomAutos.DriveDistanceWithTagAllign;
 import frc.robot.Commands.CustomAutos.DriveToTag;
+import frc.robot.Commands.CustomAutos.DriveToTagLeftRight;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -78,10 +81,15 @@ public class RobotContainer {
         NamedCommands.registerCommand("L4Pose", ComplexCommands.scoreDynamic(4));
         NamedCommands.registerCommand("home", ComplexCommands.goToHomePose());
         NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.8, 0.75));// Time from 0.25 - 0.5 to then 0.75 --- SPEED increased from .35 to .5
+        NamedCommands.registerCommand("scoreCoralGOOD", manipulator.manipulatorSpinForTime(0.85, 0.9));
         NamedCommands.registerCommand("collect", ComplexCommands.indexCoral());
         NamedCommands.registerCommand("algeaCollect", ComplexCommands.auto_algeaCollect());
         NamedCommands.registerCommand("algeaL2Pose", ComplexCommands.auto_goToAlgeaL2Pose());
+        NamedCommands.registerCommand("algeaL3Pose", ComplexCommands.auto_goToAlgeaL3Pose());
         NamedCommands.registerCommand("algeaProcess", ComplexCommands.goToProcessorPoseDynamic());
+        NamedCommands.registerCommand("algeaStore", ComplexCommands.algeaStore());
+        NamedCommands.registerCommand("algeaBargeScore", ComplexCommands.bargeScore());
+        NamedCommands.registerCommand("scoreAlgea", manipulator.manipulatorSpinForTime(1, 1));
 
         NamedCommands.registerCommand("elevatorGoDown", elevator.elevatorDownUntilThereDynamic(Constants.ElevatorConstants.elevatorHome));
 
@@ -91,6 +99,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("scoreL4 Dynamic", ComplexCommands.scoreDynamic(4));
 
         NamedCommands.registerCommand("scoreL2", ComplexCommands.scoreDynamic(2));
+
+        NamedCommands.registerCommand("allignToTagDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 0.5));
+        NamedCommands.registerCommand("allignToTagDistanceSHORT", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 0.295));
+        NamedCommands.registerCommand("allignToTagDistanceSHORT_2ND", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagPoseSecondLeg, 0.28));
+        NamedCommands.registerCommand("allignToTagDistance_Algea", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea, 0.15));
+        NamedCommands.registerCommand("allignToTagLeftRight", new DriveToTagLeftRight(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea));
+
+        NamedCommands.registerCommand("blindForward", new DriveBlindForTime(drivetrain, limelight, robotSpeeds, 1));
+
+
+
+        NamedCommands.registerCommand("backoff", new DriveBack(drivetrain, robotSpeeds, -0.3));
         
 
 
@@ -123,8 +143,9 @@ public class RobotContainer {
 
 
         SmartDashboard.putData("driveToTag", new DriveToTag(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation));
-        SmartDashboard.putData("driveToTagwithDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 1.17));
-
+        SmartDashboard.putData("driveToTagwithDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 0.55));//1.17
+        SmartDashboard.putData("leftrighttagallign", new DriveToTagLeftRight(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea));
+        SmartDashboard.putData("driveBlind", new DriveBlindForTime(drivetrain, limelight, robotSpeeds, 1));
 
 
 
@@ -139,6 +160,7 @@ public class RobotContainer {
         SmartDashboard.putData("manipulator wrist down", manipulator.manipulatorWristSpin(0.05));
 
         SmartDashboard.putData("manipulator forward", manipulator.manipulatorSpin(0.1));
+        SmartDashboard.putData("manipulator 100", manipulator.manipulatorSpin(1));
         SmartDashboard.putData("manipulator 0", manipulator.manipulatorSpin(0));
         SmartDashboard.putData("manipulator backwards", manipulator.manipulatorSpin(-0.1));
       
@@ -167,6 +189,7 @@ public class RobotContainer {
         SmartDashboard.putData("manipulator L1", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCoralL1));
         SmartDashboard.putData("manipulator L4", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorCoralL4));
         SmartDashboard.putData("manipulator barge score", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore));
+        SmartDashboard.putData("algea tuck", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgaeTuck));
 
        
         SmartDashboard.putData("elevator home", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome));
@@ -206,6 +229,8 @@ public class RobotContainer {
         SmartDashboard.putData("dynamic logic test L3", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL3));
         SmartDashboard.putData("dynamic logic test L4", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL4));
 
+        SmartDashboard.putData("process algea", ComplexCommands.goToProcessorPose());
+
 
 
 
@@ -231,6 +256,8 @@ public class RobotContainer {
         SmartDashboard.putData("black", Commands.runOnce(()->{leds.black();}));
         SmartDashboard.putData("red", Commands.runOnce(()->{leds.red();}));
         SmartDashboard.putData("rainfall", Commands.runOnce(()->{leds.rainfallSeqence();}));
+
+        SmartDashboard.putData("backoff", new DriveBack(drivetrain, robotSpeeds, -0.3));
 
 
 
@@ -299,19 +326,23 @@ public class RobotContainer {
         driverJoystick.a().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
         //driverJoystick.b().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
         driverJoystick.b().onTrue(manipulator.manipulatorSpinForTime(0.07, 0.375));
+        driverJoystick.back().onTrue(manipulator.manipulatorSpinForTime(1, 1));
 
 
 
-        operatorJoystick.a().onTrue(ComplexCommands.goToProcessorPoseDynamic());
+        operatorJoystick.a().onTrue(ComplexCommands.algeaStore());
         operatorJoystick.x().onTrue(ComplexCommands.scoreDynamic(2));
         operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
         operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
         operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic().andThen(ComplexCommands.indexCoral()));
+        operatorJoystick.pov(0).onTrue(ComplexCommands.bargeScore());
         //operatorJoystick.rightBumper().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
         operatorJoystick.pov(180).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+        //operatorJoystick.b().and(operatorJoystick.pov(180)).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+
 
         /*operatorJoystick.pov(0).whileTrue(flapHook.flapHookSpin(0.2));
         operatorJoystick.pov(180).whileTrue(flapHook.flapHookSpin(-0.2));

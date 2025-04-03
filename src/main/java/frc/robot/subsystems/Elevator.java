@@ -40,7 +40,7 @@ public class Elevator extends SubsystemBase {
 
 
   public Elevator() {
-    cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -28;
+    cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -31;
     cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     /* Configure gear ratio */

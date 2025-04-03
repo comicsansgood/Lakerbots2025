@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "center_part1"
+                  "pathName": "visionCenterPart1"
                 }
               },
               {
@@ -24,9 +24,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "center_part1Approach"
+            "name": "allignToTagDistance"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "center_part2Backoff"
+            "pathName": "visionPart1_backoff"
           }
         },
         {
@@ -60,7 +60,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "center_part2Approach"
+                  "pathName": "visionCenterPart2"
                 }
               }
             ]
@@ -69,7 +69,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "center_part3Backoff"
+            "pathName": "visionCenterPart2_Backoff"
           }
         },
         {
@@ -79,13 +79,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "algeaProcess"
+                  "name": "algeaStore"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "center_part3"
+                  "pathName": "visionCenterPart3"
                 }
               }
             ]
@@ -94,25 +94,31 @@
         {
           "type": "named",
           "data": {
-            "name": "scoreCoral"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
+            "name": "algeaBargeScore"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "center_last"
+            "pathName": "visionCenterPart3Approach"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "algeaL2Pose"
+            "name": "scoreAlgea"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "home"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "visionCenterPart3_Backoff"
           }
         }
       ]

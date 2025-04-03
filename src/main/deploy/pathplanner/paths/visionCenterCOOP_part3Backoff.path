@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.114494680851064,
+        "y": 1.4
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.206122611357109,
+        "y": 2.1633267800098572
+      },
+      "isLocked": false,
+      "linkedName": "visionCenterCOOP_part3END"
+    },
+    {
+      "anchor": {
+        "x": 5.55438829787234,
+        "y": 2.3621841755319144
+      },
+      "prevControl": {
+        "x": 5.55438829787234,
+        "y": 2.1121841755319144
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25393700787401613,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 100.0
+  },
+  "reversed": false,
+  "folder": "visionCenter",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": false
+}

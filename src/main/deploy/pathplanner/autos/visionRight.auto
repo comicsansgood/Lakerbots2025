@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "center_part1"
+                  "pathName": "visionRightPart1"
                 }
               },
               {
@@ -24,9 +24,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "center_part1Approach"
+            "name": "allignToTagDistanceSHORT"
           }
         },
         {
@@ -38,13 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "center_part2Backoff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algeaL2Pose"
+            "pathName": "visionRightPart1Backoff"
           }
         },
         {
@@ -54,38 +48,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "algeaCollect"
+                  "name": "home"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "center_part2Approach"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "center_part3Backoff"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "algeaProcess"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "center_part3"
+                  "pathName": "visionRightPart2"
                 }
               }
             ]
@@ -94,25 +63,31 @@
         {
           "type": "named",
           "data": {
-            "name": "scoreCoral"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
+            "name": "collect"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "center_last"
+            "pathName": "visionRightPart3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "algeaL2Pose"
+            "name": "L4Pose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "allignToTagDistanceSHORT_2ND"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoralGOOD"
           }
         }
       ]

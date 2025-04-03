@@ -37,6 +37,8 @@ public class Manipulator extends SubsystemBase {
 
   private RelativeEncoder encoder;
 
+  
+
   public Manipulator(){
     
     lazer = new LaserCan(7);
@@ -185,6 +187,8 @@ public Command manipulatorWristReset(){
     // we can rewrite this in if /then form for clarity and understanding
   }
 
+  
+
 
   public double getManipulatorPosition(){
     return manipulatorWrist.getEncoder().getPosition();
@@ -223,7 +227,7 @@ public Command manipulatorWristReset(){
 
 
     try{
-    isCoralDetected = lazer.getMeasurement().distance_mm <= 15 && lazer.getMeasurement().distance_mm != 0;//changed from 30 to 15 b4 first comp
+    isCoralDetected = lazer.getMeasurement().distance_mm <= 15 && lazer.getMeasurement().status == lazer.LASERCAN_STATUS_VALID_MEASUREMENT;/*  && lazer.getMeasurement().distance_mm != 0;*///changed from 30 to 15 b4 first comp
     SmartDashboard.putBoolean("isCoral", isCoralDetected);
     SmartDashboard.putNumber("lazer distance", lazer.getMeasurement().distance_mm);
     Constants.isLazerConnected = true;

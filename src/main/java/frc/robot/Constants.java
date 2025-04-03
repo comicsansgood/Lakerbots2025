@@ -19,7 +19,7 @@ public class Constants {
     public class FlapHookConstants{
         public static final double hookflapOpen = 0; // all x 9 for new gear ratio
         public static final double hookPrepare = -70; //-6.5
-        public static final double hookLatch = -150; //-143     -16
+        public static final double hookLatch = -143; //-143     -16
         public static final double flapCollect = -45; //-5
     }
 
@@ -34,11 +34,11 @@ public class Constants {
         public static final double elevatorCoralL1 = -3;
         public static final double elevatorCoralL2 = -5.5;
         public static final double elevatorCoralL3 = -13;//-14
-        public static final double elevatorCoralL4 = -24;  //24 to 25.5        to 24.75
+        public static final double elevatorCoralL4 = -24.75;  //24 
         public static final double elevatorProcess = -2;
         public static final double elevatorAlgaeL2 = -8; // -7 to -8
         public static final double elevatorAlgaeL3 = -14.5;// TODO:make this correct at the real field
-        public static final double elevatorBarge = 0.0; //TODO: put in actual number -k
+        public static final double elevatorBarge = -31;
   
     }
 
@@ -52,13 +52,16 @@ public class Constants {
         public static final double manipulatorCoralL4 = 5;
         public static final double manipulatorAlgeaCollect = 14;
         public static final double manipulatorAlgaeProcess = 18;
-        public static final double manipulatorBargeScore = 0.0; //TODO: put in actual values -k
+        public static final double manipulatorBargeScore = 6;
+        public static final double manipulatorAlgaeTuck = 10;
 
     }
 
     public class TagConstants{
         //x and area of tag
-        public static final Double[] tagTranslation = {0.0,8.0};//TODO: find these values
+        public static final Double[] tagTranslation = {-7.0,0.0};
+        public static final Double[] tagPoseSecondLeg  = {-9.0, 0.0};
+        public static final Double[] tagePoseAlgea = {-16.0, 0.0};
     }
     
 }

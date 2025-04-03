@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class LimelightSubsystem extends SubsystemBase {
-  //public int[] validIds = {12, 21};
+public int[] validIds = {17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11};
   public LimelightHelpers.PoseEstimate mt2;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -22,7 +22,7 @@ public class LimelightSubsystem extends SubsystemBase {
 Double [] values={0.0,0.0,0.0};
 
   public LimelightSubsystem() {
-    //LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIds);
+    LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIds);
   }
 
 public Pose2d getEstimatedPose(){
