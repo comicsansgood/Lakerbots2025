@@ -27,6 +27,7 @@ public class Manipulator extends SubsystemBase {
   public SparkClosedLoopController positionController;
   public SparkMaxConfig wristConfig;
   public SparkMaxConfig spinConfig;
+  public SparkMaxConfig wristConfig2;
 
   public boolean isCoralDetected;
   public boolean isAlgeaNotDetected;
@@ -52,14 +53,23 @@ public class Manipulator extends SubsystemBase {
 
     wristConfig = new SparkMaxConfig();
     spinConfig = new SparkMaxConfig();
+    wristConfig2 = new SparkMaxConfig();
 
     wristConfig.encoder
         .positionConversionFactor(1)
         .velocityConversionFactor(1);
 
+    wristConfig2.encoder
+      .positionConversionFactor(1)
+      .velocityConversionFactor(1);
+
 
     wristConfig.idleMode(IdleMode.kBrake);
     wristConfig.smartCurrentLimit(40);
+
+    wristConfig2.idleMode(IdleMode.kBrake);
+    wristConfig2.smartCurrentLimit(40);
+
     spinConfig.smartCurrentLimit(40);
     
 
@@ -81,8 +91,31 @@ public class Manipulator extends SubsystemBase {
         .reverseSoftLimitEnabled(true) //have to enable soft limits for them to work ***
         .forwardSoftLimit(16)
         .forwardSoftLimitEnabled(true);
-   
-    manipulatorWrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+
+        wristConfig2.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(0.4)
+        .i(.001)
+        .d(0)
+        .outputRange(-1, 1)
+        .iZone(0.5); 
+
+    wristConfig2.closedLoop.maxMotion
+        .maxVelocity(3000)
+        .maxAcceleration(3000)
+        .allowedClosedLoopError(.1);
+  
+        wristConfig2.softLimit
+        .reverseSoftLimit(0)
+        .reverseSoftLimitEnabled(true) //have to enable soft limits for them to work ***
+        .forwardSoftLimit(16)
+        .forwardSoftLimitEnabled(true);
+
+//change this to change wrist config
+    //manipulatorWrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    manipulatorWrist.configure(wristConfig2, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
     manipulatorSpin.configure(spinConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     encoder.setPosition(0);
   }

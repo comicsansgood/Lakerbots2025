@@ -30,15 +30,17 @@ public class Constants {
     }
 
     public class ElevatorConstants{
+        //.25 = 3/4 of inch
         public static final double elevatorHome = -0.5;
         public static final double elevatorCoralL1 = -3;
         public static final double elevatorCoralL2 = -5.5;
         public static final double elevatorCoralL3 = -13;//-14
-        public static final double elevatorCoralL4 = -24.75;  //24 
+        public static final double elevatorCoralL4 = -24.25;  //24 
         public static final double elevatorProcess = -2;
-        public static final double elevatorAlgaeL2 = -8; // -7 to -8
-        public static final double elevatorAlgaeL3 = -14.5;// TODO:make this correct at the real field
+        public static final double elevatorAlgaeL2 = -8.25; //-8
+        public static final double elevatorAlgaeL3 = -14.75;// -14.5
         public static final double elevatorBarge = -31;
+        public static final double elevatorCoralL4___AUTO = -24.50;
   
     }
 

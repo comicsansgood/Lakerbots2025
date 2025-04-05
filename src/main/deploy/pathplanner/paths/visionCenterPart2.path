@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.5,
-        "y": 4.0
+        "x": 6.55,
+        "y": 4.2
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.393875146068063,
-        "y": 4.226357052856598
+        "x": 6.1484672985409015,
+        "y": 4.2
       },
       "isLocked": false,
       "linkedName": "visionPart1_backoffEND"
     },
     {
       "anchor": {
-        "x": 5.88365650694618,
-        "y": 4.362073465135126
+        "x": 5.87,
+        "y": 4.31
       },
       "prevControl": {
-        "x": 6.13365650694618,
-        "y": 4.362073465135126
+        "x": 6.223099545133291,
+        "y": 4.31
       },
       "nextControl": null,
       "isLocked": false,

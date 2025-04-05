@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "L4Pose___AUTO"
+                  "name": "L4Pose"
                 }
               }
             ]
@@ -69,7 +69,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "visionCenterCOOPPart2_Backoff"
+            "pathName": "visionCenterPart2_Backoff"
           }
         },
         {
@@ -79,38 +79,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "algeaProcess"
+                  "name": "algeaStore"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "visionCenterCOOP_part3"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "scoreCoral"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "algeaL3preparefortele"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "visionCenterCOOP_part3Backoff"
+                  "pathName": "visionCenterPart3_NOSCORE"
                 }
               }
             ]

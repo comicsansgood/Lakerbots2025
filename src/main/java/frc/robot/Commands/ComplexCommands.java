@@ -58,6 +58,7 @@ public class ComplexCommands {
         case 2:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL2;break;
         case 3:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL3;break;
         case 4:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL4;break;
+        case 5:elevatorPosition = Constants.ElevatorConstants.elevatorCoralL4___AUTO;break;//for auto
       }
       return Commands.sequence(
         m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
@@ -150,9 +151,10 @@ public class ComplexCommands {
       return Commands.sequence(
         m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
         new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL2).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect)),
-        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
+        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.4, -0.3)
       );
     }
+    
 
     public static Command auto_goToAlgeaL2Pose(){//added 3/6/25 for algea in auto
       return Commands.sequence(
@@ -169,14 +171,14 @@ public class ComplexCommands {
     }
 
     public static Command auto_algeaCollect(){//added 3/6/25 for algea in auto
-      return m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3);
+      return m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.4, -0.3);
     }
 
     public static Command collectAlgeaL3Dynamic(){
       return Commands.sequence(
         m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),
         new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorAlgaeL3).alongWith(m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorAlgeaCollect)),
-        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.3, -0.3)
+        m_manipulator.manipulatorSpinUntilCurrentReachedWithWait(-0.4, -0.3)
       );
     }
 

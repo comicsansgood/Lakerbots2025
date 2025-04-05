@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.88365650694618,
-        "y": 4.362
+        "x": 5.87,
+        "y": 4.31
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.972157579787234,
-        "y": 4.357563164893617
+        "x": 6.958501072841054,
+        "y": 4.305563164893616
       },
       "isLocked": false,
       "linkedName": "visionPart2_END"
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 6.867137632978723,
-        "y": 4.0299534574468066
+        "y": 4.029953457446808
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

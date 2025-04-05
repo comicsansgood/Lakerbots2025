@@ -17,6 +17,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +47,7 @@ import frc.robot.subsystems.Leds;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.9).in(RadiansPerSecond);//0.75 ----> 0.8 -----> 0.9v  // 3/4(0.75) of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(1.2).in(RadiansPerSecond);//0.75 ----> 0.8 -----> 0.9v  // 3/4(0.75) of a rotation per second max angular velocity
 
     private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -79,6 +80,10 @@ public class RobotContainer {
 
         
         NamedCommands.registerCommand("L4Pose", ComplexCommands.scoreDynamic(4));
+
+        NamedCommands.registerCommand("L4Pose___AUTO", ComplexCommands.scoreDynamic(5));
+
+    
         NamedCommands.registerCommand("home", ComplexCommands.goToHomePose());
         NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.8, 0.75));// Time from 0.25 - 0.5 to then 0.75 --- SPEED increased from .35 to .5
         NamedCommands.registerCommand("scoreCoralGOOD", manipulator.manipulatorSpinForTime(0.85, 0.9));
@@ -90,6 +95,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("algeaStore", ComplexCommands.algeaStore());
         NamedCommands.registerCommand("algeaBargeScore", ComplexCommands.bargeScore());
         NamedCommands.registerCommand("scoreAlgea", manipulator.manipulatorSpinForTime(1, 1));
+        NamedCommands.registerCommand("algeaL3preparefortele", ComplexCommands.collectAlgeaL3Dynamic());
 
         NamedCommands.registerCommand("elevatorGoDown", elevator.elevatorDownUntilThereDynamic(Constants.ElevatorConstants.elevatorHome));
 
@@ -260,6 +266,9 @@ public class RobotContainer {
         SmartDashboard.putData("backoff", new DriveBack(drivetrain, robotSpeeds, -0.3));
 
 
+        SmartDashboard.putData("score level 5???", ComplexCommands.scoreDynamic(5));
+
+
 
 
         //SmartDashboard.putNumber("climber current", climber.climberGetCurrent());
@@ -335,12 +344,14 @@ public class RobotContainer {
         operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
         operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
         operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic().andThen(ComplexCommands.indexCoral()));
-        operatorJoystick.pov(0).onTrue(ComplexCommands.bargeScore());
+        //operatorJoystick.pov(0).onTrue(ComplexCommands.bargeScore());
+        operatorJoystick.pov(0).onTrue(ComplexCommands.goToProcessorPoseDynamic());
         //operatorJoystick.rightBumper().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
-        operatorJoystick.pov(180).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+        //operatorJoystick.pov(180).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+        operatorJoystick.axisGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.75).and(operatorJoystick.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.75)).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
         //operatorJoystick.b().and(operatorJoystick.pov(180)).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
 
 
