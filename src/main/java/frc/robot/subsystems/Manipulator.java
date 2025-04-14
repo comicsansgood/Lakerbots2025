@@ -213,6 +213,10 @@ public Command manipulatorWristReset(){
     return getManipulatorCurrent() >= cutoffCurrent;
   }
 
+  public boolean ismanipulatorClearToFlip(){
+    return getManipulatorPosition() <= Constants.ManipulatorConstants.manipulatorClearToFlip;
+  }
+
 
   public boolean manipulatorAtPosition(){
     return Math.abs(getManipulatorPosition() - targetPos) < tolerance;

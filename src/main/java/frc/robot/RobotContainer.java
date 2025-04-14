@@ -152,7 +152,7 @@ public class RobotContainer {
         SmartDashboard.putData("driveToTagwithDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 0.55));//1.17
         SmartDashboard.putData("leftrighttagallign", new DriveToTagLeftRight(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea));
         SmartDashboard.putData("driveBlind", new DriveBlindForTime(drivetrain, limelight, robotSpeeds, 1));
-
+      
 
 
         //so broken lol
@@ -238,6 +238,7 @@ public class RobotContainer {
         SmartDashboard.putData("process algea", ComplexCommands.goToProcessorPose());
 
 
+        //SmartDashboard.putData("BargeAlgeaLaunch",ComplexCommands.FlipAlgea());
 
 
 

@@ -56,6 +56,7 @@ public class Constants {
         public static final double manipulatorAlgaeProcess = 18;
         public static final double manipulatorBargeScore = 6;
         public static final double manipulatorAlgaeTuck = 10;
+        public static final double manipulatorClearToFlip = 8;
 
     }
 

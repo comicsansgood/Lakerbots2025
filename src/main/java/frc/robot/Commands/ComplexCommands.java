@@ -42,8 +42,8 @@ public class ComplexCommands {
 //--- INDEX the CORAL---///
     public static Command indexCoral(){//TODO:figure out interupt behavior with going home
       return Commands.sequence(
-        m_manipulator.spinUntilDetected(0.15),
-        m_manipulator.manipulatorSpinForTime(0.1, 0.35)//chagned time from .45 3/29/25 
+        m_manipulator.spinUntilDetected(0.3), //Changed from .15 to .3
+        m_manipulator.manipulatorSpinForTime(0.2, 0.35)//chagned time from .45 3/29/25, changed form .1 to .2
         //m_manipulator.spinUntilNotDetected(0.1),
         //m_manipulator.manipulatorSpinForTime(-0.1, 0.5) /////Changed form 0.35 to 0.75
       );
@@ -114,6 +114,23 @@ public class ComplexCommands {
         m_elevator.elevatorGoToPosition(targetPos);
         m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome);
       });
+    }
+
+   /* 
+    public static Command FlipAlgea(){
+      return Commands.parallel(
+        new ElevatorMoveUpDynamic(m_elevator, Constants.ElevatorConstants.elevatorBarge),
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore),
+        new SpinManipulatorBargeFlip(m_manipulator, elevatorPosition)
+      );
+    }
+      */
+
+    public static Command PrepareAndFlip(){
+      return Commands.sequence(
+        m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect)
+       // andThen(FlipAlgea())
+        );
     }
 
     
