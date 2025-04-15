@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
-
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -14,7 +12,6 @@ import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -23,15 +20,14 @@ import frc.robot.Mechanisms;
 
 public class Elevator extends SubsystemBase {
 
+  //Objects
   public TalonFX elevatorLead = new TalonFX(13, "canivore");
   public TalonFX elevatorFollow = new TalonFX(14, "canivore");
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
-  private final MotionMagicVoltage m_mmReqDown = new MotionMagicVoltage(0);
   private final DynamicMotionMagicVoltage dynamicReq = new DynamicMotionMagicVoltage(0, 80, 400, 4000);
 
+  //Config
   public TalonFXConfiguration cfg = new TalonFXConfiguration();
-
-  private int m_printCount = 0;
 
   private final Mechanisms m_mechanisms = new Mechanisms();
 
@@ -40,6 +36,7 @@ public class Elevator extends SubsystemBase {
 
 
   public Elevator() {
+    //Soft limit switch
     cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -31;
     cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
@@ -55,6 +52,7 @@ public class Elevator extends SubsystemBase {
       .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(0));
 
 
+    //PID values
     Slot0Configs slot0 = cfg.Slot0;
     slot0.kS = 0; // Add 0.25 V output to overcome static friction
     slot0.kV = 0.275; // A velocity target of 1 rps results in 0.12 V output
@@ -73,10 +71,8 @@ public class Elevator extends SubsystemBase {
       System.out.println("Could not configure device. Error: " + status.toString());
     }
 
-   elevatorFollow.setControl(new Follower(elevatorLead.getDeviceID(), false));//change bool for dir inversion
-
-
-     
+    //command elevatorFollow to follow elevatorLead
+    elevatorFollow.setControl(new Follower(elevatorLead.getDeviceID(), false));//change bool for dir inversion   
   }
 
   public Command elevatorGoToPosition(double setpoint){
@@ -91,26 +87,9 @@ public class Elevator extends SubsystemBase {
   }
 
 
-  /*public Command elevatorGoUpDynamic(double setpoint){
-    return Commands.runOnce(()->{
-      this.setpoint = setpoint;
-      dynamicReq.Velocity = 15;
-      dynamicReq.Acceleration = 15;
-      dynamicReq.Jerk = 0;
-      //dynamicReq.FeedForward = 100;
-      elevatorLead.setControl(dynamicReq.withPosition(setpoint));
-    });
-  }
-  public Command elevatorGoDownDynamic(double setpoint){
-    return Commands.runOnce(()->{
-      this.setpoint = setpoint;
-      dynamicReq.Velocity = 15;
-      dynamicReq.Acceleration = 15;
-      dynamicReq.Jerk = 0;
-      elevatorLead.setControl(dynamicReq.withPosition(setpoint));
-    });
-  }
-    */
+  //For using 2 different v, a, and j values for going up and down
+  //Dynamic Motion Magic (Pheonix Pro) is needed for this
+  //Two functions, one is used for up and one is used for down
 
   public void elevatorUpDynamic(double setpoint){
     this.setpoint = setpoint;
@@ -129,8 +108,7 @@ public class Elevator extends SubsystemBase {
     elevatorLead.setControl(dynamicReq.withPosition(setpoint));
   }
 
-
-
+  //non dynamic motion
   public Command elevatorGoToPositionUntilThere(double setpoint){
     return runEnd(
       () -> {this.setpoint = setpoint;elevatorLead.setControl(m_mmReq.withPosition(setpoint));},
@@ -148,8 +126,6 @@ public class Elevator extends SubsystemBase {
       ).until(() -> elevatorAtPosition());  
     }
 
-  
-
   public boolean elevatorAtPosition(){
     return tolerance > Math.abs(elevatorLead.getPosition().getValueAsDouble() - setpoint);
   }
@@ -164,13 +140,6 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("elevatorError", elevatorGetError());
     SmartDashboard.putNumber("elevator position", elevatorLead.getPosition().getValueAsDouble());
 
-
-    /*if (++m_printCount >= 10) {
-      m_printCount = 0;
-      System.out.println("Pos: " + elevatorLead.getPosition());
-      System.out.println("Vel: " + elevatorLead.getVelocity());
-      System.out.println();
-    }*/
     m_mechanisms.update(elevatorLead.getPosition(), elevatorLead.getVelocity());
   }
 

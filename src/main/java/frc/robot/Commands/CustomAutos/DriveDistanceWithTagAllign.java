@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimelightSubsystem;
 
+//Alligns with the tag left right while also driving a blind distance forward back
+
 public class DriveDistanceWithTagAllign extends Command {
 
   CommandSwerveDrivetrain m_drivetrain;
@@ -20,29 +22,25 @@ public class DriveDistanceWithTagAllign extends Command {
   double startingDistance;
   double calculatedForwardBackSpeed = 0.5;
   Translation2d calculatedTranslation;
-  double tolerence = 0.1;//TODO:tune
-  double speed = 1; //TODO:tune
+  double tolerence = 0.1;
+  double speed = 1;
   
-  PIDController m_xPid = new PIDController(0.1, 0, 0);//TODO:tune
+  //only one pid controller
+  PIDController m_xPid = new PIDController(0.1, 0, 0);
 
-  
-
-
-
-
-    public DriveDistanceWithTagAllign(CommandSwerveDrivetrain m_drivetrain, LimelightSubsystem m_limelight, SwerveRequest.ApplyRobotSpeeds robotSpeeds, Double[] desiredTagTranslation, double distance) {
-      this.m_drivetrain = m_drivetrain;
-      this.m_limelight = m_limelight;
-
-      this.robotSpeeds = robotSpeeds;
-      this.desiredTagTranslation = desiredTagTranslation;
-      this.distance = distance;
-      addRequirements(m_drivetrain, m_limelight);
-    }
+  public DriveDistanceWithTagAllign(CommandSwerveDrivetrain m_drivetrain, LimelightSubsystem m_limelight, SwerveRequest.ApplyRobotSpeeds robotSpeeds, Double[] desiredTagTranslation, double distance) {
+    this.m_drivetrain = m_drivetrain;
+    this.m_limelight = m_limelight;
+    this.robotSpeeds = robotSpeeds;
+    this.desiredTagTranslation = desiredTagTranslation;
+    this.distance = distance;
+    addRequirements(m_drivetrain, m_limelight);
+  }
 
     @Override
     public void initialize() { 
       m_xPid.setTolerance(tolerence);
+      //set setpoint
       m_xPid.setSetpoint(desiredTagTranslation[0]);
 
       startingDistance = m_drivetrain.getPose().getX();
@@ -50,6 +48,8 @@ public class DriveDistanceWithTagAllign extends Command {
 
     @Override
     public void execute() {
+      //if the difference between the current x pos 
+      //and the starting x pos is less than the input distance, keep driving at a speed of 2
       if(Math.abs(m_drivetrain.getPose().getX() - startingDistance) < distance){
         calculatedForwardBackSpeed = 2;
       }
@@ -57,16 +57,17 @@ public class DriveDistanceWithTagAllign extends Command {
         calculatedForwardBackSpeed = 0;
       }
 
-
+      //pull values from camera feed
       values = m_limelight.getValues();
       System.out.println(values[0] +", " +values[2]);
 
+      //speed to drive at is a component vector of the PID L-R calculation and the calculatedForwardBackSpeed described above
       calculatedTranslation = new Translation2d(
         m_xPid.calculate(values[0]),
         calculatedForwardBackSpeed
         );
+
       System.out.println("diff" + (m_drivetrain.getPose().getX() - startingDistance) + ", des" + distance);
-      //System.out.println("calculated x speed: " + calculatedTranslation.getX() + "   calculated y speed: " + calculatedTranslation.getY());
     
        m_drivetrain.setControl(robotSpeeds.withSpeeds(new ChassisSpeeds(calculatedTranslation.getY(),speed*calculatedTranslation.getX(), 0)));
     }
@@ -78,7 +79,8 @@ public class DriveDistanceWithTagAllign extends Command {
 
     @Override
     public boolean isFinished() {
-      return calculatedForwardBackSpeed ==0;//m_xPid.atSetpoint();
+      //Finish the command when it has finished its forward back target
+      return calculatedForwardBackSpeed == 0;
     }
     
     @Override

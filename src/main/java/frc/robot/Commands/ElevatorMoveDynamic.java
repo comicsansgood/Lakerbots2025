@@ -16,13 +16,14 @@ public class ElevatorMoveDynamic extends Command {
 
   @Override
   public void initialize() {
-    //-100       -50
+    //If the diff between the setpoint and the pos is <0, move with the up profile 
+    //(as elevator pos starts at 0 and goes nrgative as it moves up)
+    //else use the down profile
     if(setpoint - elevator.elevatorLead.getPosition().getValueAsDouble() < 0){
       elevator.elevatorUpDynamic(setpoint);
     }else{
       elevator.elevatorDownDynamic(setpoint);
     }
-    
   }
 
   @Override

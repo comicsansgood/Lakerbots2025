@@ -5,15 +5,11 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy.PascalCaseStrategy;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,14 +19,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.ComplexCommands;
 import frc.robot.Commands.DriveTest;
 import frc.robot.Commands.DriveToTarget;
-import frc.robot.Commands.ElevatorMoveDownDynamic;
 import frc.robot.Commands.ElevatorMoveDynamic;
-import frc.robot.Commands.ElevatorMoveUpDynamic;
-import frc.robot.Commands.CustomAutos.AutoCommand;
 import frc.robot.Commands.CustomAutos.DriveBack;
 import frc.robot.Commands.CustomAutos.DriveBlindForTime;
 import frc.robot.Commands.CustomAutos.DriveDistanceWithTagAllign;
@@ -46,44 +38,47 @@ import frc.robot.subsystems.FlapHook;
 import frc.robot.subsystems.Leds;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(1.2).in(RadiansPerSecond);//0.75 ----> 0.8 -----> 0.9v  // 3/4(0.75) of a rotation per second max angular velocity
 
+    //swerve drive objects
+    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxAngularRate = RotationsPerSecond.of(1.2).in(RadiansPerSecond);//0.75 ----> 0.8 -----> 0.9v   // 3/4(0.75) of a rotation per second max angular velocity
     private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    @SuppressWarnings("unused")// \/not used but in for clarity
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    @SuppressWarnings("unused")// \/not used but in for clarity
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+
+    //Joystick Objects
     private final CommandXboxController driverJoystick = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-
+    //Subsystem objects
     public static Manipulator manipulator = new Manipulator();
     public static Climber2 climber = new Climber2();
     public static FlapHook flapHook = new FlapHook();
     public static Elevator elevator = new Elevator();
     public static LimelightSubsystem limelight = new LimelightSubsystem();
     public static Leds leds = new Leds();
-    /* Path follower */
+    
+    /* Path chooser */
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
 
-        
+        //Named commands for pathplanner gui
         NamedCommands.registerCommand("L4Pose", ComplexCommands.scoreDynamic(4));
-
         NamedCommands.registerCommand("L4Pose___AUTO", ComplexCommands.scoreDynamic(5));
-
-    
         NamedCommands.registerCommand("home", ComplexCommands.goToHomePose());
         NamedCommands.registerCommand("scoreCoral", manipulator.manipulatorSpinForTime(0.8, 0.75));// Time from 0.25 - 0.5 to then 0.75 --- SPEED increased from .35 to .5
         NamedCommands.registerCommand("scoreCoralGOOD", manipulator.manipulatorSpinForTime(0.85, 0.9));
@@ -96,14 +91,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("algeaBargeScore", ComplexCommands.bargeScore());
         NamedCommands.registerCommand("scoreAlgea", manipulator.manipulatorSpinForTime(1, 1));
         NamedCommands.registerCommand("algeaL3preparefortele", ComplexCommands.collectAlgeaL3Dynamic());
-
         NamedCommands.registerCommand("elevatorGoDown", elevator.elevatorDownUntilThereDynamic(Constants.ElevatorConstants.elevatorHome));
-
         NamedCommands.registerCommand("manipulatorHome", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome));
-
-
         NamedCommands.registerCommand("scoreL4 Dynamic", ComplexCommands.scoreDynamic(4));
-
         NamedCommands.registerCommand("scoreL2", ComplexCommands.scoreDynamic(2));
 
         NamedCommands.registerCommand("allignToTagDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 0.5));
@@ -111,29 +101,16 @@ public class RobotContainer {
         NamedCommands.registerCommand("allignToTagDistanceSHORT_2ND", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagPoseSecondLeg, 0.28));
         NamedCommands.registerCommand("allignToTagDistance_Algea", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea, 0.15));
         NamedCommands.registerCommand("allignToTagLeftRight", new DriveToTagLeftRight(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea));
-
         NamedCommands.registerCommand("blindForward", new DriveBlindForTime(drivetrain, limelight, robotSpeeds, 1));
-
-
-
         NamedCommands.registerCommand("backoff", new DriveBack(drivetrain, robotSpeeds, -0.3));
         
-
-
-        //new EventTrigger("triggerScoreL4").onTrue(ComplexCommands.score(4));
         new EventTrigger("triggerScoreL2").onTrue(ComplexCommands.scoreDynamic(2));
-        //new EventTrigger("triggerHome").onTrue(ComplexCommands.goToHomePose());
-
 
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
 
 
-
-
+        //Smart Dashboard buttons
         SmartDashboard.putData("Auto Mode", autoChooser);
-
-        SmartDashboard.putData("tagtestyo", Commands.runOnce(()->AutoCommand.autoTest(drivetrain, limelight, robotSpeeds)));
-
         SmartDashboard.putData("drive to 0,0", new DriveToTarget(drivetrain, robotSpeeds,drivetrain.getState().Pose,
                new Pose2d(new Translation2d(0,0), new Rotation2d(0)),
                 MaxSpeed
@@ -142,25 +119,16 @@ public class RobotContainer {
             new Pose2d(new Translation2d(1,1), new Rotation2d(0)),
             MaxSpeed
             ));
-
         SmartDashboard.putData("testing drive in command", new DriveTest(drivetrain, drive, robotSpeeds, MaxSpeed));
 
+        
         SmartDashboard.putData("spin until detect", manipulator.spinUntilDetected(0.2));
-
 
         SmartDashboard.putData("driveToTag", new DriveToTag(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation));
         SmartDashboard.putData("driveToTagwithDistance", new DriveDistanceWithTagAllign(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagTranslation, 0.55));//1.17
         SmartDashboard.putData("leftrighttagallign", new DriveToTagLeftRight(drivetrain, limelight, robotSpeeds, Constants.TagConstants.tagePoseAlgea));
         SmartDashboard.putData("driveBlind", new DriveBlindForTime(drivetrain, limelight, robotSpeeds, 1));
       
-
-
-        //so broken lol
-        ///SmartDashboard.putData("climber down", climber.climber2Spin(0.2));
-        ///SmartDashboard.putData("climber 0", climber.climber2Spin(0));
-        //SmartDashboard.putData("climber up", climber.climber2Spin(-0.2));
-
-
         SmartDashboard.putData("manipulator wrist up", manipulator.manipulatorWristSpin(-0.05));
         SmartDashboard.putData("manipulator wrist 0", manipulator.manipulatorWristSpin(0.0));
         SmartDashboard.putData("manipulator wrist down", manipulator.manipulatorWristSpin(0.05));
@@ -183,11 +151,9 @@ public class RobotContainer {
         SmartDashboard.putData("flaphook closed", flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
         SmartDashboard.putData("Reset Flap Hook Encoder",flapHook.flapHookEncoderReset());
 
-
         SmartDashboard.putData("climber position HOME", climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
         SmartDashboard.putData("climber position down", climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
         SmartDashboard.putData("climber position mid", climber.climberGoToPosition(Constants.ClimberConstants.climberMid));
-
 
         SmartDashboard.putData("manipulator algea", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgeaCollect));
         SmartDashboard.putData("manipulator home", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorHome));
@@ -197,7 +163,6 @@ public class RobotContainer {
         SmartDashboard.putData("manipulator barge score", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore));
         SmartDashboard.putData("algea tuck", manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorAlgaeTuck));
 
-       
         SmartDashboard.putData("elevator home", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorHome));
         SmartDashboard.putData("elevator process", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorProcess));
         SmartDashboard.putData("elevator coral 1", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL1));
@@ -208,10 +173,6 @@ public class RobotContainer {
         SmartDashboard.putData("elevator alegae3", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorAlgaeL3));
         SmartDashboard.putData("elevator barge", elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorBarge));
 
-
-
-        //SmartDashboard.putData("center coral", ComplexCommands.centerCoral());
-        //SmartDashboard.putData("travel sequence test", ComplexCommands.travelSequence());
         SmartDashboard.putData("elevator go home sequence", ComplexCommands.goToHomePose());
         SmartDashboard.putData("indexCoral", ComplexCommands.indexCoral());
         SmartDashboard.putData("manipulatorSpinfortime", manipulator.manipulatorSpinForTime(0.2,3));
@@ -237,27 +198,8 @@ public class RobotContainer {
 
         SmartDashboard.putData("process algea", ComplexCommands.goToProcessorPose());
 
-
-        //SmartDashboard.putData("BargeAlgeaLaunch",ComplexCommands.FlipAlgea());
-
-
-
-        /*SmartDashboard.putData("Elevator up dynamic", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));
-        SmartDashboard.putData("Elevator down dynamic", ComplexCommands.elevatorGoDown(Constants.ElevatorConstants.elevatorHome));
-        SmartDashboard.putData("Elevator up dynamicBetter", ComplexCommands.elevatorGoUp(Constants.ElevatorConstants.elevatorCoralL3));*/
-
-        SmartDashboard.putData("elevator up dynamic best", new ElevatorMoveUpDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL4));
-        SmartDashboard.putData("elevator down dynamic best", new ElevatorMoveDownDynamic(elevator, Constants.ElevatorConstants.elevatorHome));
-
-
-
-
-        //test
-
-
         SmartDashboard.putData("manipulatorReset", manipulator.manipulatorWristReset());
         SmartDashboard.putNumber("Elevator Current", elevator.elevatorGetCurrent());
-
 
         SmartDashboard.putData("led spirit", Commands.runOnce(()->{leds.spiritColors();}));
         SmartDashboard.putData("black", Commands.runOnce(()->{leds.black();}));
@@ -266,19 +208,8 @@ public class RobotContainer {
 
         SmartDashboard.putData("backoff", new DriveBack(drivetrain, robotSpeeds, -0.3));
 
-
         SmartDashboard.putData("score level 5???", ComplexCommands.scoreDynamic(5));
 
-
-
-
-        //SmartDashboard.putNumber("climber current", climber.climberGetCurrent());
-
-        /*SmartDashboard.putData("testingDrivecmd", drivetrain.applyRequest(() ->
-        drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-    ));*/
 
         configureBindings();
     }
@@ -287,6 +218,7 @@ public class RobotContainer {
 
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
+        // See guidebook for more details
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -297,7 +229,7 @@ public class RobotContainer {
         );
         
 
-    
+        //Drivetrain slow mode on POV, Robot centric
         driverJoystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(1).withVelocityY(0))
         );
@@ -310,63 +242,37 @@ public class RobotContainer {
         driverJoystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0).withVelocityY(1))
         );
-    
-        
-  
 
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        /*driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));*/
-
-
-        // reset the field-centric heading on left bumper press
-
+        //-------------------------Driver Buttons-------------------------
+        // reset the field-centric heading on start btn
         driverJoystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-
 
         driverJoystick.leftBumper().onTrue(ComplexCommands.indexCoral());
         driverJoystick.rightBumper().onTrue(manipulator.manipulatorSpinForTime(0.2, 1));
         driverJoystick.x().onTrue(manipulator.manipulatorSpinForTime(-0.1, 0.5));
         driverJoystick.y().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookLatch));
         driverJoystick.a().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberDown));
-        //driverJoystick.b().onTrue(climber.climberGoToPosition(Constants.ClimberConstants.climberHome));
         driverJoystick.b().onTrue(manipulator.manipulatorSpinForTime(0.07, 0.375));
         driverJoystick.back().onTrue(manipulator.manipulatorSpinForTime(1, 1));
 
-
-
+        //------------------------Operator Buttons-------------------------
         operatorJoystick.a().onTrue(ComplexCommands.algeaStore());
         operatorJoystick.x().onTrue(ComplexCommands.scoreDynamic(2));
         operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
         operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
         operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic().andThen(ComplexCommands.indexCoral()));
-        //operatorJoystick.pov(0).onTrue(ComplexCommands.bargeScore());
         operatorJoystick.pov(0).onTrue(ComplexCommands.goToProcessorPoseDynamic());
-        //operatorJoystick.rightBumper().onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
-        //operatorJoystick.rightBumper().onTrue(ComplexCommands.goToProcessorPose());
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
-        //operatorJoystick.pov(180).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
+        //When BOTH triggers are pushed in, flaphook prepare
         operatorJoystick.axisGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.75).and(operatorJoystick.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.75)).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
-        //operatorJoystick.b().and(operatorJoystick.pov(180)).onTrue(flapHook.hookGoToPosition(Constants.FlapHookConstants.hookPrepare));
 
 
-        /*operatorJoystick.pov(0).whileTrue(flapHook.flapHookSpin(0.2));
-        operatorJoystick.pov(180).whileTrue(flapHook.flapHookSpin(-0.2));
-        operatorJoystick.povCenter().onTrue(flapHook.flapHookSpin(0.0));*/
-
-        
-
-
-        
+    
     }
     public Command getAutonomousCommand() {
-        /* Run the path selected from the auto chooser */
         return autoChooser.getSelected();
     }
 }

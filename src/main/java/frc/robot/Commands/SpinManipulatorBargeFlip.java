@@ -1,7 +1,6 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.Manipulator;
 
 public class SpinManipulatorBargeFlip extends Command {
@@ -18,21 +17,19 @@ public class SpinManipulatorBargeFlip extends Command {
 
   @Override
   public void initialize() {
-   
+ 
   }
 
   @Override
   public void execute() {
-
     if(manipulator.ismanipulatorClearToFlip()){
     manipulator.manipulatorSpin(1);
     }
     else{
       manipulator.manipulatorSpin(-0.3);
     }
-
   }
-
+  
   @Override
   public void end(boolean interrupted) {
   }

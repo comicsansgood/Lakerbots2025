@@ -22,6 +22,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
   }
 
+  @SuppressWarnings("static-access")
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
      * of how to use vision should be tuned per-robot and to the team's specification.
      */
     if (kUseLimelight) {
+      @SuppressWarnings("static-access")
       var driveState = m_robotContainer.drivetrain.getState();
       double headingDeg = driveState.Pose.getRotation().getDegrees();
       double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);

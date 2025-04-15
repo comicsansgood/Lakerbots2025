@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -10,34 +9,30 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FlapHook extends SubsystemBase {
 
+  //Subsystem objects
   public SparkMax flapHookMotor;
   public SparkClosedLoopController closedLoopController;
   public SparkMaxConfig motorConfig;
   public double targetPos;
   private RelativeEncoder encoder; 
 
-  public double tolerance = 0.1;//TODO: tune this value
+  public double tolerance = 0.1;
 
 
   public FlapHook() {
 
+    //objects
     flapHookMotor = new SparkMax(8, MotorType.kBrushless);
-
     closedLoopController = flapHookMotor.getClosedLoopController();
-
-    encoder =flapHookMotor.getEncoder(); 
-
+    encoder = flapHookMotor.getEncoder(); 
+    //config
     motorConfig = new SparkMaxConfig();
-
-
 
     motorConfig.encoder
         .positionConversionFactor(1)
@@ -47,75 +42,28 @@ public class FlapHook extends SubsystemBase {
 
     motorConfig.smartCurrentLimit(40);
 
-
     motorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        // Set PID values for position control. We don't need to pass a closed
-        // loop slot, as it will default to slot 0.
         .p(0.13)
         .i(0)
-        .d(1)//TODO:these pid values are trash ngl
+        .d(1)
         .outputRange(-1, 1);
-        // Set PID values for velocity control in slot 1
-       // .p(0.0001, ClosedLoopSlot.kSlot1)
-        //.i(0, ClosedLoopSlot.kSlot1)
-        //.d(0, ClosedLoopSlot.kSlot1)
-        //.velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-        //.outputRange(-1, 1, ClosedLoopSlot.kSlot1);
 
     motorConfig.closedLoop.maxMotion
-        // Set MAXMotion parameters for position control. We don't need to pass
-        // a closed loop slot, as it will default to slot 0.
         .maxVelocity(5000)
         .maxAcceleration(5000)
         .allowedClosedLoopError(0.1);
-        // Set MAXMotion parameters for velocity control in slot 1
-        //.maxAcceleration(500, ClosedLoopSlot.kSlot1)
-        //.maxVelocity(6000, ClosedLoopSlot.kSlot1)
-       // .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot1);
+
 
     motorConfig.softLimit
-    .reverseSoftLimit(-143) //TODO: make this the setpoint                     
-     //-16 x 9 for gear ratio change
+    .reverseSoftLimit(-143) //In this case, this should be the same as the flaphook closed postion                    
     .reverseSoftLimitEnabled(true)
     .forwardSoftLimit(143)
     .forwardSoftLimitEnabled(true);
 
- 
-    //motorConfig.inverted(true);
     flapHookMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    
-    
+
     encoder.setPosition(0);
-
-
-
-
-
-  }
-
-  public Command hookGoIn(double targetSpeed){
-    return runOnce(
-      () -> {
-        flapHookMotor.set(targetSpeed);
-      }
-    );
-  }
-
-  public Command hookGoOut(double targetSpeed){
-    return runOnce(
-      () -> {
-        flapHookMotor.set(targetSpeed);
-      }
-    );
-  }
-
-  public Command hookStop(double targetSpeed){
-    return runOnce(
-      () -> {
-        flapHookMotor.set(targetSpeed);
-      }
-    );
   }
 
   public Command hookGoToPosition(double targetPos) {
@@ -124,7 +72,6 @@ public class FlapHook extends SubsystemBase {
         () -> {
           this.targetPos = targetPos;
           closedLoopController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
-
         });
   }
 
@@ -136,7 +83,6 @@ public class FlapHook extends SubsystemBase {
     return Commands.runOnce(() -> {flapHookMotor.set(speed);});
   }
 
-
   public double getHookPosition(){
     return flapHookMotor.getEncoder().getPosition();
   }
@@ -145,6 +91,7 @@ public class FlapHook extends SubsystemBase {
     return Commands.runOnce(() ->{encoder.setPosition(0);});
   }
 
+  //unused but funny so i left it in
   public Command jiggle(double jiggleLength, double timesJiggled){
     return 
     runOnce(()-> {
@@ -162,14 +109,8 @@ public class FlapHook extends SubsystemBase {
     });
   }
 
-  
-  
-
-
-
   @Override
   public void periodic() {
- 
   }
 
   @Override
