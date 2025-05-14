@@ -2,9 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.LimelightResults;
+import frc.robot.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -41,6 +44,22 @@ public class LimelightSubsystem extends SubsystemBase {
   public double getTimeStamp(){
     return mt2.timestampSeconds;
   }
+/* 
+  public Pose3d getTagPose(){
+
+    LimelightResults results = LimelightHelpers.getLatestResults("limelight");
+    if (results.targets_Fiducials.length > 0) {
+        LimelightTarget_Fiducial tag = results.targets_Fiducials[0];
+        double id = tag.fiducialID;          // Tag ID
+        String family = tag.fiducialFamily;
+           // Tag family (e.g., "16h5")
+    
+      return tag.getTargetPose_RobotSpace();
+    }
+    else{return null;}
+    
+  }
+    */
   
   //Simple value get-er
   public Double[] getValues(){
@@ -70,8 +89,10 @@ public class LimelightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightArea", area);
     SmartDashboard.putNumberArray("llll", NetworkTableInstance.getDefault().getTable("limelight").getEntry("targetpose_robotspacez").getDoubleArray(new double[6]));
 
+    //try{SmartDashboard.putString("est tag pos", getTagPose().toString());}catch(Exception e){}
+
     //More pose estimation stuff
-    LimelightHelpers.SetRobotOrientation("limelight", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);//TODO: pose values
+    LimelightHelpers.SetRobotOrientation("limelight", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
   }
 

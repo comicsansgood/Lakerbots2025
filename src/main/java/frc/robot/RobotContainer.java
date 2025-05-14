@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.BargeScoreFlip;
+import frc.robot.Commands.BargeTest;
 import frc.robot.Commands.ComplexCommands;
 import frc.robot.Commands.DriveTest;
 import frc.robot.Commands.DriveToTarget;
@@ -197,6 +199,7 @@ public class RobotContainer {
         SmartDashboard.putData("dynamic logic test L4", new ElevatorMoveDynamic(elevator, Constants.ElevatorConstants.elevatorCoralL4));
 
         SmartDashboard.putData("process algea", ComplexCommands.goToProcessorPose());
+        SmartDashboard.putData("algea flip", new BargeScoreFlip(-18,10,elevator, manipulator));
 
         SmartDashboard.putData("manipulatorReset", manipulator.manipulatorWristReset());
         SmartDashboard.putNumber("Elevator Current", elevator.elevatorGetCurrent());
@@ -209,13 +212,14 @@ public class RobotContainer {
         SmartDashboard.putData("backoff", new DriveBack(drivetrain, robotSpeeds, -0.3));
 
         SmartDashboard.putData("score level 5???", ComplexCommands.scoreDynamic(5));
+        SmartDashboard.putData("---bargetest---", new BargeTest(manipulator));
+
 
 
         configureBindings();
     }
 
     private void configureBindings() {
-
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         // See guidebook for more details

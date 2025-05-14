@@ -41,6 +41,7 @@ public class Constants {
         public static final double elevatorAlgaeL3 = -14.75;// -14.5
         public static final double elevatorBarge = -31;
         public static final double elevatorCoralL4___AUTO = -24.50;
+        public static final double elevaotrClearToFlip = -28;
   
     }
 
@@ -57,6 +58,7 @@ public class Constants {
         public static final double manipulatorBargeScore = 6;
         public static final double manipulatorAlgaeTuck = 10;
         public static final double manipulatorClearToFlip = 8;
+        public static final double manipulatorFlipPrepare = 13;
 
     }
 

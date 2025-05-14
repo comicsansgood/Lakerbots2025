@@ -32,6 +32,7 @@ public class Manipulator extends SubsystemBase {
   public boolean isCoralDetected;
   public boolean isAlgeaNotDetected;
   public double targetPos;
+  public double setpoint;
   public double tolerance = 0.1;
   public double cutoffCurrent = 45;
 
@@ -159,6 +160,10 @@ public class Manipulator extends SubsystemBase {
     });
   }
 
+public void manipulatorSpinMethod(double speed){
+manipulatorSpin.set(speed);
+}
+
   public Command manipulatorWristSpin(double speed){
     return Commands.runOnce(() -> {
       manipulatorWrist.set(speed);
@@ -171,6 +176,11 @@ public class Manipulator extends SubsystemBase {
           this.targetPos = targetPos;
           positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
         });
+  }
+
+  public void setmanipulator(double targetPos){
+    this.targetPos = targetPos;
+    positionController.setReference(targetPos, ControlType.kMAXMotionPositionControl);
   }
 
   public Command manipulatorGoToPositionUntilThere(double targetPos){
@@ -205,6 +215,9 @@ public class Manipulator extends SubsystemBase {
 
   public boolean manipulatorAtPosition(){
     return Math.abs(getManipulatorPosition() - targetPos) < tolerance;
+  }
+  public boolean manipulatorAtSpecificPosition(double setpoint){
+    return Math.abs(getManipulatorPosition() - setpoint) < tolerance;
   }
 
   public double getManipulatorPosition(){

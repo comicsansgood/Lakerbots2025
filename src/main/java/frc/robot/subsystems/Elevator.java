@@ -128,6 +128,11 @@ public class Elevator extends SubsystemBase {
 
   public boolean elevatorAtPosition(){
     return tolerance > Math.abs(elevatorLead.getPosition().getValueAsDouble() - setpoint);
+
+  }
+
+  public double getElevatorPosition(){
+    return elevatorLead.getPosition().getValueAsDouble();
   }
 
   public double elevatorGetCurrent(){

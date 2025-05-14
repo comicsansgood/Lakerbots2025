@@ -42,7 +42,7 @@ public class ComplexCommands {
   public static Command indexCoral(){
     return Commands.sequence(
       m_manipulator.spinUntilDetected(0.3),
-      m_manipulator.manipulatorSpinForTime(0.2, 0.35)
+      m_manipulator.manipulatorSpinForTime(0.1, 0.35)
     );
   }
 
@@ -121,15 +121,15 @@ public class ComplexCommands {
 
 
 //TODO:finish flip sequence
-  /* 
-  public static Command FlipAlgea(){
+  
+  /*public static Command FlipAlgea(){
     return Commands.parallel(
-      new ElevatorMoveUpDynamic(m_elevator, Constants.ElevatorConstants.elevatorBarge),
+      new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorBarge),
       m_manipulator.manipulatorGoToPosition(Constants.ManipulatorConstants.manipulatorBargeScore),
       new SpinManipulatorBargeFlip(m_manipulator, elevatorPosition)
     );
-  }
-    */
+  }*/
+    
 
   public static Command PrepareAndFlip(){
     return Commands.sequence(
