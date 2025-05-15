@@ -66,8 +66,10 @@ public class RobotContainer {
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystem objects
+    //Bookmark-3c
     public static Manipulator manipulator = new Manipulator();
     public static Climber2 climber = new Climber2();
+    //Bookmark-2b
     public static FlapHook flapHook = new FlapHook();
     public static Elevator elevator = new Elevator();
     public static LimelightSubsystem limelight = new LimelightSubsystem();
@@ -267,7 +269,9 @@ public class RobotContainer {
         operatorJoystick.y().onTrue(ComplexCommands.scoreDynamic(3));
         operatorJoystick.b().onTrue(ComplexCommands.scoreDynamic(4));
         operatorJoystick.leftBumper().onTrue(ComplexCommands.goToHomePoseDynamic().andThen(ComplexCommands.indexCoral()));
-        operatorJoystick.pov(0).onTrue(ComplexCommands.goToProcessorPoseDynamic());
+        operatorJoystick.pov(180).onTrue(ComplexCommands.goToProcessorPoseDynamic());
+        operatorJoystick.pov(90).onTrue(new BargeScoreFlip(-18,10,elevator, manipulator));
+        operatorJoystick.pov(270).onTrue(elevator.elevatorGoToPosition(Constants.ElevatorConstants.elevatorCoralL4));
         operatorJoystick.back().onTrue(ComplexCommands.collectAlgeaL2Dynamic());
         operatorJoystick.start().onTrue(ComplexCommands.collectAlgeaL3Dynamic());
         //When BOTH triggers are pushed in, flaphook prepare

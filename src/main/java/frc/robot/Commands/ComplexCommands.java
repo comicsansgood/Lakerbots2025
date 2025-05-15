@@ -12,6 +12,7 @@ public class ComplexCommands {
 
 
   //pull subsystems from robot container to avoid making new instance
+  //Bookmark-3d
   public static FlapHook m_flapHook = RobotContainer.flapHook;
   public static Elevator m_elevator = RobotContainer.elevator;
   public static Manipulator m_manipulator = RobotContainer.manipulator;
@@ -162,6 +163,7 @@ public class ComplexCommands {
 
   public static Command goToHomePoseDynamic(){
     return Commands.sequence(
+      //Bookmark-3b
       m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorTravel),// this does not appear to be working correctly
       new ElevatorMoveDynamic(m_elevator, Constants.ElevatorConstants.elevatorHome),
       m_manipulator.manipulatorGoToPositionUntilThere(Constants.ManipulatorConstants.manipulatorHome));

@@ -45,6 +45,7 @@ public class Elevator extends SubsystemBase {
     fdb.SensorToMechanismRatio = 1;
 
     /* Configure Motion Magic */
+    //Bookmark-6
     MotionMagicConfigs mm = cfg.MotionMagic;
     mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(15)) // 5 (mechanism) rotations per second cruise
       .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(15)) // Take approximately 0.5 seconds to reach max vel
@@ -140,6 +141,7 @@ public class Elevator extends SubsystemBase {
   }
 
   @Override
+  //Bookmark-4
   public void periodic() {
     SmartDashboard.putBoolean("elevatorAtPosition", elevatorAtPosition());
     SmartDashboard.putNumber("elevatorError", elevatorGetError());
